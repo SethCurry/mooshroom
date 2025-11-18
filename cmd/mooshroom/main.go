@@ -2,11 +2,14 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/SethCurry/mooshroom/internal/mooshroom"
 	"github.com/SethCurry/mooshroom/internal/mqtt"
 	paho "github.com/eclipse/paho.mqtt.golang"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/urfave/cli/v3"
 	"go.uber.org/zap"
 )
@@ -66,6 +69,14 @@ func main() {
 				Name:  "server",
 				Usage: "Start the HTTP server and MQTT listener.",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
+					config, err := tools.getConfig()
+					if err != nil {
+						return err
+					}
+
+					http.Handle("/metrics", promhttp.Handler())
+					http.ListenAndServe(fmt.Sprintf(":%d", config.HTTP.Port), nil)
+
 					return nil
 				},
 			},

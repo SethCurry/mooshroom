@@ -8,6 +8,10 @@ import (
 	"github.com/goccy/go-yaml"
 )
 
+type HTTPConfig struct {
+	Port int `yaml:"port"`
+}
+
 // MQTTConfig stores the configuration options for the MQTT client.
 type MQTTConfig struct {
 	Brokers  []string `yaml:"brokers"`
@@ -18,6 +22,7 @@ type MQTTConfig struct {
 // Config stores the configuration options for mooshroom.
 type Config struct {
 	MQTT MQTTConfig `yaml:"mqtt"`
+	HTTP HTTPConfig `yaml:"http"`
 }
 
 func ParseConfig(reader io.Reader) (*Config, error) {
