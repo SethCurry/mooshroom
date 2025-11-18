@@ -15,6 +15,7 @@ type mqttLogger struct {
 func (l *mqttLogger) Println(v ...interface{}) {
 	l.printImpl(v...)
 }
+
 func (l *mqttLogger) Printf(format string, v ...interface{}) {
 	l.printfImpl(format, v...)
 }
@@ -109,6 +110,13 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 		}
 	}
 
+	baseClient := paho.NewClient(client.baseClientOptions)
+	if token := baseClient.Connect(); token.Wait() && token.Error() != nil {
+		return nil, fmt.Errorf("failed to connect to MQTT broker: %w", token.Error())
+	}
+
+	client.baseClient = baseClient
+
 	return client, nil
 }
 
@@ -141,6 +149,7 @@ type Client struct {
 }
 
 func (c *Client) Subscribe(sub Subscription) error {
+	c.logger.Debug("subscribing to topic", zap.String("subscription", sub.Name), zap.String("topic", sub.Topic), zap.Int("qos", int(sub.QoS)))
 	tok := c.baseClient.Subscribe(sub.Topic, byte(sub.QoS), c.wrapSubscriptionHandler(sub))
 	if tok.Wait() && tok.Error() != nil {
 		c.logger.Error("failed to subscribe to topic", zap.String("subscription", sub.Name), zap.String("topic", sub.Topic), zap.Error(tok.Error()))
@@ -168,15 +177,4 @@ func (c *Client) wrapSubscriptionHandler(sub Subscription) paho.MessageHandler {
 			c.logger.Error("failed to handle message", zap.String("subscription", sub.Name), zap.String("topic", msg.Topic()), zap.String("payload", string(msg.Payload())), zap.Error(err))
 		}
 	}
-}
-
-// Connect connects to the MQTT broker.  It will block until the connection is established or an error occurs.
-func (c *Client) Connect() error {
-	tok := c.baseClient.Connect()
-
-	if tok.Wait() && tok.Error() != nil {
-		return fmt.Errorf("failed to connect to MQTT broker: %w", tok.Error())
-	}
-
-	return nil
 }

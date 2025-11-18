@@ -10,7 +10,9 @@ import (
 
 // MQTTConfig stores the configuration options for the MQTT client.
 type MQTTConfig struct {
-	Brokers []string `yaml:"brokers"`
+	Brokers  []string `yaml:"brokers"`
+	Username string   `yaml:"username"`
+	Password string   `yaml:"password"`
 }
 
 // Config stores the configuration options for mooshroom.

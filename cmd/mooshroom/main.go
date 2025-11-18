@@ -12,6 +12,7 @@ import (
 )
 
 type CLITools struct {
+	logger       *zap.Logger
 	parsedConfig *mooshroom.Config
 }
 
@@ -33,7 +34,18 @@ func (t *CLITools) getMQTTClient(clientID string) (*mqtt.Client, error) {
 		return nil, err
 	}
 
-	return mqtt.NewClient(mqtt.WithBrokers(config.MQTT.Brokers...), mqtt.WithClientID(clientID))
+	opts := []mqtt.ClientOption{
+		mqtt.WithBrokers(config.MQTT.Brokers...),
+		mqtt.WithClientID(clientID),
+		mqtt.WithLogger(t.logger),
+	}
+	if config.MQTT.Username != "" {
+		opts = append(opts, mqtt.WithUsername(config.MQTT.Username))
+	}
+	if config.MQTT.Password != "" {
+		opts = append(opts, mqtt.WithPassword(config.MQTT.Password))
+	}
+	return mqtt.NewClient(opts...)
 }
 
 func main() {
@@ -42,7 +54,9 @@ func main() {
 		panic(err)
 	}
 
-	tools := &CLITools{}
+	tools := &CLITools{
+		logger: logger,
+	}
 
 	cmd := &cli.Command{
 		Name:  "mooshroom",
@@ -76,13 +90,16 @@ func main() {
 									if err != nil {
 										return err
 									}
+									logger.Debug("got MQTT client")
+
 									for _, topic := range topics {
+										logger.Info("subscribing to topic", zap.String("topic", topic))
 										err := client.Subscribe(mqtt.Subscription{
 											Name:  topic,
 											Topic: topic,
 											QoS:   mqtt.QoS0,
 											Handler: func(client *mqtt.Client, msg paho.Message, logger *zap.Logger) error {
-												logger.Info("received message", zap.String("topic", msg.Topic()), zap.String("payload", string(msg.Payload())))
+												logger.Info("saw message", zap.String("topic", msg.Topic()), zap.String("payload", string(msg.Payload())))
 												return nil
 											},
 										})
@@ -90,6 +107,7 @@ func main() {
 											logger.Error("failed to subscribe to topic", zap.String("topic", topic), zap.Error(err))
 										}
 									}
+									logger.Info("subscribed to topics")
 									<-ctx.Done()
 									return nil
 								},
