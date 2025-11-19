@@ -218,6 +218,23 @@ int DHTClient::read() {
 	return readDHT(gpio_pin, &reading);
 }
 
+char* DHTClient::json() {
+	float localTemp = getTemperature();
+	float localHumid = getHumidity();
+
+	char formatStr[] = "{\"humidity\":%.1f,\"temperature\":%.1f}";
+
+	int jsonLen = snprintf(NULL, 0, formatStr, localHumid, localTemp);
+	jsonLen++;
+
+	char *jsonBuf;
+	jsonBuf = (char *)calloc(jsonLen, sizeof(char));
+
+	snprintf(jsonBuf, jsonLen, formatStr, localHumid, localTemp);
+
+	return jsonBuf;
+}
+
 // == global defines =============================================
 
 static const char* TAG = "DHT";

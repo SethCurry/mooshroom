@@ -32,11 +32,17 @@ extern "C" void app_main(void)
         int ret = dhtClient.read();
         errorHandler(ret);
 
+        char *readingJson = dhtClient.json();
+
+        /*
         float humidity = dhtClient.getHumidity();
         float temperature = dhtClient.getTemperature();
 
         printf("Humidity %.1f%%\n", humidity);
         printf("Temperature %.1fC\n", temperature);
+        */
+        printf("%s\n", readingJson);
+        free(readingJson);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }

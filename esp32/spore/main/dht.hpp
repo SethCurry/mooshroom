@@ -8,7 +8,6 @@
 #include "driver/gpio.h"
 
 
-
 void errorHandler(int response);
 
 
@@ -30,6 +29,7 @@ class DHTClient {
     int read();
     float getHumidity();
     float getTemperature();
+    char* json();
 };
 
 #endif
