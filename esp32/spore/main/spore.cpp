@@ -4,6 +4,35 @@
 #include "dht.hpp"
 #include "nvs_flash.h"
 #include "freertos/task.h"
+#include "homeassistant.hpp"
+
+void register_with_ha(esp_mqtt_client_handle_t mqtt_conn) {
+  ha_autodiscovery_config_t ha_temperature_cfg = {
+    .name = "office Temperature",
+    .unique_id = "office-temperature",
+    .stat_topic = "office/climate",
+    .value_template = "{{value_json.temperature}}",
+    .unit_of_measurement = "C",
+    .device_class = "temperature",
+    .stat_class = "measurement",
+    .device_id = "esp-climate",
+  };
+
+
+  send_ha_config(mqtt_conn, "homeassistant/sensor/office-temperature/config", &ha_temperature_cfg);
+
+  ha_autodiscovery_config_t ha_humidity_cfg = {
+    .name = "office Humidity",
+    .unique_id = "office-humidity",
+    .stat_topic = "office/climate",
+    .value_template = "{{value_json.humidity}}",
+    .unit_of_measurement = "%",
+    .device_class = "humidity",
+    .stat_class = "measurement",
+    .device_id = "esp-climate",
+  };
+  send_ha_config(mqtt_conn, "homeassistant/sensor/office-temperature/config", &ha_humidity_cfg);
+}
 
 extern "C" void app_main(void)
 {
@@ -22,7 +51,9 @@ extern "C" void app_main(void)
 
     MQTTClient mqttClient(mqttBrokerURL, mqttUsername, mqttPassword);
 
-    char mqttTopic[] = "test/topic";
+    register_with_ha(mqttClient.client);
+
+    char mqttTopic[] = "office/climate";
 
     DHTClient dhtClient(15);
 
@@ -32,15 +63,9 @@ extern "C" void app_main(void)
 
         char *readingJson = dhtClient.json();
 
-        /*
-        float humidity = dhtClient.getHumidity();
-        float temperature = dhtClient.getTemperature();
-
-        printf("Humidity %.1f%%\n", humidity);
-        printf("Temperature %.1fC\n", temperature);
-        */
         printf("%s\n", readingJson);
         mqttClient.publish(mqttTopic, readingJson);
+
         free(readingJson);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }

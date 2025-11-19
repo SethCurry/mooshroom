@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "homeassistant.h"
+#include "homeassistant.hpp"
 #include "mqtt_client.h"
 #include "esp_log.h"
 
@@ -268,7 +268,7 @@ char * ha_autodiscovery_mqtt_config_json(ha_autodiscovery_config_t *config) {
   int jsonLen = autodiscovery_config_json_len(config);
 
   char *jsonBuf;
-  jsonBuf = calloc(jsonLen, sizeof(char));
+  jsonBuf = (char *)calloc(jsonLen, sizeof(char));
 
   autodiscovery_config_to_json(jsonBuf, config);
 

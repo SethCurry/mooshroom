@@ -28,5 +28,4 @@ void send_ha_dht_config(esp_mqtt_client_handle_t client, char *const device_id, 
 
 char * ha_autodiscovery_mqtt_config_json(ha_autodiscovery_config_t *config);
 void send_ha_config(esp_mqtt_client_handle_t client, char *config_topic, ha_autodiscovery_config_t *config);
-
 #endif

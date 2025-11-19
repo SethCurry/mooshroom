@@ -4,9 +4,8 @@
 #include "mqtt_client.h"
 
 class MQTTClient {
-  esp_mqtt_client_handle_t client;
-
   public:
+    esp_mqtt_client_handle_t client;
     MQTTClient(char *broker, char *username, char *password);
     void publish(char *topic, char *payload);
 };
