@@ -23,8 +23,6 @@ extern "C" void app_main(void)
     MQTTClient mqttClient(mqttBrokerURL, mqttUsername, mqttPassword);
 
     char mqttTopic[] = "test/topic";
-    char mqttMessage[] = "Hello, World!";
-    mqttClient.publish(mqttTopic, mqttMessage);
 
     DHTClient dhtClient(15);
 
@@ -42,6 +40,7 @@ extern "C" void app_main(void)
         printf("Temperature %.1fC\n", temperature);
         */
         printf("%s\n", readingJson);
+        mqttClient.publish(mqttTopic, readingJson);
         free(readingJson);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }

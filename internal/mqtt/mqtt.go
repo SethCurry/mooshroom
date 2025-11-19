@@ -150,6 +150,7 @@ type Client struct {
 
 func (c *Client) Subscribe(sub Subscription) error {
 	c.logger.Debug("subscribing to topic", zap.String("subscription", sub.Name), zap.String("topic", sub.Topic), zap.Int("qos", int(sub.QoS)))
+	c.subscriptions = append(c.subscriptions, sub)
 	tok := c.baseClient.Subscribe(sub.Topic, byte(sub.QoS), c.wrapSubscriptionHandler(sub))
 	if tok.Wait() && tok.Error() != nil {
 		c.logger.Error("failed to subscribe to topic", zap.String("subscription", sub.Name), zap.String("topic", sub.Topic), zap.Error(tok.Error()))
