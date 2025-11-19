@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "mqtt.cpp"
-#include "wifi.c"
+#include "mqtt.hpp"
+#include "wifi.hpp"
 #include "nvs_flash.h"
 
 extern "C" void app_main(void)
@@ -11,7 +11,16 @@ extern "C" void app_main(void)
       ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
+
     start_wifi();
-    MQTTClient mqttClient("mqtt://10.0.0.56:1883", "esp", "esp");
-    mqttClient.publish("test/topic", "Hello, World!");
+
+    char mqttBrokerURL[] = "mqtt://10.0.0.56:1883";
+    char mqttUsername[] = "esp";
+    char mqttPassword[] = "esp";
+
+    MQTTClient mqttClient(mqttBrokerURL, mqttUsername, mqttPassword);
+
+    char mqttTopic[] = "test/topic";
+    char mqttMessage[] = "Hello, World!";
+    mqttClient.publish(mqttTopic, mqttMessage);
 }
