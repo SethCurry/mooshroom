@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include "mqtt.hpp"
 #include "wifi.hpp"
+#include "dht.hpp"
 #include "nvs_flash.h"
+#include "freertos/task.h"
 
 extern "C" void app_main(void)
 {
@@ -23,4 +25,18 @@ extern "C" void app_main(void)
     char mqttTopic[] = "test/topic";
     char mqttMessage[] = "Hello, World!";
     mqttClient.publish(mqttTopic, mqttMessage);
+
+    DHTClient dhtClient(15);
+
+    while (1) {
+        int ret = dhtClient.read();
+        errorHandler(ret);
+
+        float humidity = dhtClient.getHumidity();
+        float temperature = dhtClient.getTemperature();
+
+        printf("Humidity %.1f%%\n", humidity);
+        printf("Temperature %.1fC\n", temperature);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
 }
