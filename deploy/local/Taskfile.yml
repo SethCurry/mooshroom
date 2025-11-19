@@ -1,0 +1,19 @@
+# https://taskfile.dev
+
+version: "3"
+
+vars:
+  GREETING: Hello, World!
+
+tasks:
+  up:
+    cmds:
+      - docker-compose up -d
+      - goose up
+  down:
+    cmds:
+      - goose down
+      - docker-compose stop
+  reset:
+    cmds:
+      - docker-compose down

@@ -8,6 +8,10 @@ import (
 	"github.com/goccy/go-yaml"
 )
 
+type SQLConfig struct {
+	URL string `yaml:"url"`
+}
+
 type HTTPConfig struct {
 	Port int `yaml:"port"`
 }
@@ -23,6 +27,7 @@ type MQTTConfig struct {
 type Config struct {
 	MQTT MQTTConfig `yaml:"mqtt"`
 	HTTP HTTPConfig `yaml:"http"`
+	SQL  SQLConfig  `yaml:"sql"`
 }
 
 func ParseConfig(reader io.Reader) (*Config, error) {

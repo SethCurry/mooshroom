@@ -45,9 +45,9 @@ extern "C" void app_main(void)
 
     start_wifi();
 
-    char mqttBrokerURL[] = "mqtt://10.0.0.56:1883";
-    char mqttUsername[] = "esp";
-    char mqttPassword[] = "esp";
+    char mqttBrokerURL[] = CONFIG_MQTT_URL;
+    char mqttUsername[] = CONFIG_MQTT_USERNAME;
+    char mqttPassword[] = CONFIG_MQTT_PASSWORD;
 
     MQTTClient mqttClient(mqttBrokerURL, mqttUsername, mqttPassword);
 
