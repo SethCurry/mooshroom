@@ -38,6 +38,12 @@ func (c *Client) DHTSensorData() *DHTSensorDataClient {
 	}
 }
 
+func (c *Client) Spores() *SporeClient {
+	return &SporeClient{
+		client: c,
+	}
+}
+
 type DHTSensorClient struct {
 	client *Client
 }
@@ -74,4 +80,8 @@ func (d *DHTSensorDataClient) Create(ctx context.Context, atTime time.Time, sens
 	}
 
 	return nil
+}
+
+type SporeClient struct {
+	client *Client
 }

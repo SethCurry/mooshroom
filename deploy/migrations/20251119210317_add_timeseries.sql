@@ -1,8 +1,14 @@
 -- +goose Up
 -- +goose StatementBegin
+CREATE TABLE spores (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255)
+);
+
 CREATE TABLE dht_sensors (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255),
+  spore_id INTEGER REFERENCES spores(id),
   mqtt_topic VARCHAR(512)
 );
 
@@ -20,4 +26,5 @@ CREATE TABLE dht_data (
 -- +goose StatementBegin
 DROP TABLE dht_data;
 DROP TABLE dht_sensors;
+DROP TABLE spores;
 -- +goose StatementEnd

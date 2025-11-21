@@ -83,7 +83,7 @@ func WithLogger(logger *zap.Logger) ClientOption {
 	}
 }
 
-func WithSubscriptions(subscriptions ...Subscription) ClientOption {
+func WithSubscriptions(subscriptions ...string) ClientOption {
 	return func(c *Client) error {
 		c.subscriptions = append(c.subscriptions, subscriptions...)
 		return nil
@@ -94,7 +94,7 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 	client := &Client{
 		baseClientOptions: paho.NewClientOptions(),
 		logger:            zap.NewNop(),
-		subscriptions:     []Subscription{},
+		subscriptions:     []string{},
 	}
 
 	for _, opt := range opts {
@@ -106,7 +106,10 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 	client.baseClientOptions.OnConnect = func(pahoClient paho.Client) {
 		client.logger.Info("connected to MQTT broker")
 		for _, sub := range client.subscriptions {
-			client.Subscribe(sub)
+			subErr := client.Subscribe(sub, QoS0)
+			if subErr != nil {
+				client.logger.Error("failed to create subscription", zap.String("topic", sub), zap.Error(subErr))
+			}
 		}
 	}
 
@@ -134,6 +137,15 @@ const (
 	QoS2 QoSLevel = 2
 )
 
+type MessageFilter func(paho.Message) bool
+
+type MessageCallback func(*Client, paho.Message, *zap.Logger)
+
+type MessageHandler struct {
+	Filter   MessageFilter
+	Callback MessageCallback
+}
+
 type Subscription struct {
 	Name    string
 	Topic   string
@@ -145,18 +157,31 @@ type Client struct {
 	baseClientOptions *paho.ClientOptions
 	baseClient        paho.Client
 	logger            *zap.Logger
-	subscriptions     []Subscription
+	handlers          []MessageHandler
+	subscriptions     []string
 }
 
-func (c *Client) Subscribe(sub Subscription) error {
-	c.logger.Debug("subscribing to topic", zap.String("subscription", sub.Name), zap.String("topic", sub.Topic), zap.Int("qos", int(sub.QoS)))
+func (c *Client) dispatchMessage(client paho.Client, msg paho.Message) {
+	for _, v := range c.handlers {
+		if v.Filter == nil || v.Filter(msg) {
+			v.Callback(c, msg, c.logger)
+		}
+	}
+}
+
+func (c *Client) AddHandler(handler MessageHandler) {
+	c.handlers = append(c.handlers, handler)
+}
+
+func (c *Client) Subscribe(sub string, qos QoSLevel) error {
+	c.logger.Debug("subscribing to topic", zap.String("filter", sub))
 	c.subscriptions = append(c.subscriptions, sub)
-	tok := c.baseClient.Subscribe(sub.Topic, byte(sub.QoS), c.wrapSubscriptionHandler(sub))
+	tok := c.baseClient.Subscribe(sub, byte(qos), c.dispatchMessage)
 	if tok.Wait() && tok.Error() != nil {
-		c.logger.Error("failed to subscribe to topic", zap.String("subscription", sub.Name), zap.String("topic", sub.Topic), zap.Error(tok.Error()))
+		c.logger.Error("failed to subscribe to topic", zap.String("topic", sub), zap.Error(tok.Error()))
 		return fmt.Errorf("failed to subscribe to topic: %w", tok.Error())
 	}
-	c.logger.Info("subscribed to topic", zap.String("subscription", sub.Name), zap.String("topic", sub.Topic))
+	c.logger.Info("subscribed to topic", zap.String("topic", sub))
 	return nil
 }
 
@@ -168,14 +193,4 @@ func (c *Client) Publish(topic string, qos QoSLevel, retained bool, payload []by
 		c.logger.Info("published message", zap.String("topic", topic), zap.String("payload", string(payload)))
 	}
 	return nil
-}
-
-func (c *Client) wrapSubscriptionHandler(sub Subscription) paho.MessageHandler {
-	return func(client paho.Client, msg paho.Message) {
-		c.logger.Debug("received message", zap.String("subscription", sub.Name), zap.String("topic", msg.Topic()), zap.String("payload", string(msg.Payload())))
-
-		if err := sub.Handler(c, msg, c.logger); err != nil {
-			c.logger.Error("failed to handle message", zap.String("subscription", sub.Name), zap.String("topic", msg.Topic()), zap.String("payload", string(msg.Payload())), zap.Error(err))
-		}
-	}
 }

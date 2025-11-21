@@ -103,17 +103,15 @@ func main() {
 									}
 									logger.Debug("got MQTT client")
 
+									client.AddHandler(mqtt.MessageHandler{
+										Callback: func(c *mqtt.Client, msg paho.Message, callLogger *zap.Logger) {
+											tools.logger.Info("saw MQTT message", zap.String("topic", msg.Topic()), zap.String("payload", string(msg.Payload())))
+										},
+									})
+
 									for _, topic := range topics {
 										logger.Info("subscribing to topic", zap.String("topic", topic))
-										err := client.Subscribe(mqtt.Subscription{
-											Name:  topic,
-											Topic: topic,
-											QoS:   mqtt.QoS0,
-											Handler: func(client *mqtt.Client, msg paho.Message, logger *zap.Logger) error {
-												logger.Info("saw message", zap.String("topic", msg.Topic()), zap.String("payload", string(msg.Payload())))
-												return nil
-											},
-										})
+										err := client.Subscribe(topic, mqtt.QoS0)
 										if err != nil {
 											logger.Error("failed to subscribe to topic", zap.String("topic", topic), zap.Error(err))
 										}
