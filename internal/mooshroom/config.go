@@ -21,6 +21,7 @@ type MQTTConfig struct {
 	Brokers  []string `yaml:"brokers"`
 	Username string   `yaml:"username"`
 	Password string   `yaml:"password"`
+	Prefix   string   `yaml:"prefix"`
 }
 
 // Config stores the configuration options for mooshroom.

@@ -222,15 +222,15 @@ char* DHTClient::json() {
 	float localTemp = getTemperature();
 	float localHumid = getHumidity();
 
-	char formatStr[] = "{\"humidity\":%.1f,\"temperature\":%.1f}";
+	char formatStr[] = "{\"pin\": %d, \"humidity\":%.1f,\"temperature\":%.1f}";
 
-	int jsonLen = snprintf(NULL, 0, formatStr, localHumid, localTemp);
+	int jsonLen = snprintf(NULL, 0, formatStr, (int)gpio_pin, localHumid, localTemp);
 	jsonLen++;
 
 	char *jsonBuf;
 	jsonBuf = (char *)calloc(jsonLen, sizeof(char));
 
-	snprintf(jsonBuf, jsonLen, formatStr, localHumid, localTemp);
+	snprintf(jsonBuf, jsonLen, formatStr, (int)gpio_pin, localHumid, localTemp);
 
 	return jsonBuf;
 }

@@ -35,5 +35,14 @@ menu "Mooshroom"
       default ""
       help
         The device name to use for Mooshroom
+    config SPORE_MQTT_PREFIX
+      string "MQTT Topic Prefix"
+      default "mooshroom"
+      help
+        The MQTT prefix to use
+    config DHT_PIN
+      int "DHT GPIO pin"
+      help
+        The GPIO pin used for the DHT sensor
   endmenu
 endmenu

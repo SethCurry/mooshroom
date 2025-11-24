@@ -51,11 +51,15 @@ extern "C" void app_main(void)
 
     MQTTClient mqttClient(mqttBrokerURL, mqttUsername, mqttPassword);
 
-    register_with_ha(mqttClient.client);
+    //register_with_ha(mqttClient.client);
 
-    char mqttTopic[] = "office/climate";
+    int mqttTopicLen = snprintf(NULL, 0, "%s/spores/%s/dht_data", CONFIG_SPORE_MQTT_PREFIX, CONFIG_SPORE_NAME);
 
-    DHTClient dhtClient(15);
+    char mqttTopic[mqttTopicLen + 1];
+
+    snprintf(mqttTopic, mqttTopicLen + 1, "%s/spores/%s/dht_data", CONFIG_SPORE_MQTT_PREFIX, CONFIG_SPORE_NAME);
+
+    DHTClient dhtClient(CONFIG_DHT_PIN);
 
     while (1) {
         int ret = dhtClient.read();
@@ -63,6 +67,7 @@ extern "C" void app_main(void)
 
         char *readingJson = dhtClient.json();
 
+        printf("publishing message to %s\n", mqttTopic);
         printf("%s\n", readingJson);
         mqttClient.publish(mqttTopic, readingJson);
 

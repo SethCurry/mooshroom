@@ -8,8 +8,8 @@ CREATE TABLE spores (
 CREATE TABLE dht_sensors (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255),
-  spore_id INTEGER REFERENCES spores(id),
-  mqtt_topic VARCHAR(512)
+  gpio_pin INTEGER NOT NULL,
+  spore_id INTEGER REFERENCES spores(id)
 );
 
 CREATE TABLE dht_data (

@@ -162,6 +162,7 @@ type Client struct {
 }
 
 func (c *Client) dispatchMessage(client paho.Client, msg paho.Message) {
+	c.logger.Debug("saw MQTT message", zap.String("topic", msg.Topic()), zap.String("payload", string(msg.Payload())))
 	for _, v := range c.handlers {
 		if v.Filter == nil || v.Filter(msg) {
 			v.Callback(c, msg, c.logger)

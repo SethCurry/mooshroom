@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"regexp"
 
+	"github.com/SethCurry/mooshroom/internal/models"
 	"github.com/SethCurry/mooshroom/internal/mooshroom"
 	"github.com/SethCurry/mooshroom/internal/mqtt"
+	"github.com/SethCurry/mooshroom/internal/spore"
 	paho "github.com/eclipse/paho.mqtt.golang"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/urfave/cli/v3"
@@ -51,6 +54,15 @@ func (t *CLITools) getMQTTClient(clientID string) (*mqtt.Client, error) {
 	return mqtt.NewClient(opts...)
 }
 
+func (t *CLITools) getDatabaseClient() (*models.Client, error) {
+	config, err := t.getConfig()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get config: %w", err)
+	}
+
+	return models.NewClient(context.Background(), config.SQL.URL)
+}
+
 func main() {
 	logger, err := zap.NewDevelopment()
 	if err != nil {
@@ -73,6 +85,32 @@ func main() {
 					if err != nil {
 						return err
 					}
+
+					dbClient, err := tools.getDatabaseClient()
+					if err != nil {
+						return err
+					}
+
+					mqttClient, err := tools.getMQTTClient("mooshroom-server")
+					if err != nil {
+						return fmt.Errorf("failed to connect to MQTT: %w", err)
+					}
+
+					sporeListener := spore.NewMQTTListener(dbClient, config.MQTT.Prefix)
+
+					mqttClient.Subscribe(config.MQTT.Prefix+"/#", mqtt.QoS0)
+					mqttClient.AddHandler(mqtt.MessageHandler{
+						Filter: func(msg paho.Message) bool {
+							matches, err := regexp.Match(config.MQTT.Prefix+"/spores/.*/dht_data", []byte(msg.Topic()))
+							if err != nil {
+								tools.logger.Error("regexp failed for MQTT message prefix", zap.String("topic", msg.Topic()), zap.Error(err))
+								return false
+							}
+
+							return matches
+						},
+						Callback: sporeListener.ProcessDHTMessage,
+					})
 
 					http.Handle("/metrics", promhttp.Handler())
 					http.ListenAndServe(fmt.Sprintf(":%d", config.HTTP.Port), nil)
