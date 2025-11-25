@@ -63,7 +63,11 @@ extern "C" void app_main(void)
 
     while (1) {
         int ret = dhtClient.read();
-        errorHandler(ret);
+
+        if (ret != DHT_OK) {
+          vTaskDelay(1000 / portTICK_PERIOD_MS);
+          continue;
+        }
 
         char *readingJson = dhtClient.json();
 
