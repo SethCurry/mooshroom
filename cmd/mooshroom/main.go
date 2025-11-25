@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"os"
 	"regexp"
 
+	"github.com/SethCurry/mooshroom/internal/api"
 	"github.com/SethCurry/mooshroom/internal/models"
 	"github.com/SethCurry/mooshroom/internal/mooshroom"
 	"github.com/SethCurry/mooshroom/internal/mqtt"
@@ -112,10 +112,11 @@ func main() {
 						Callback: sporeListener.ProcessDHTMessage,
 					})
 
-					http.Handle("/metrics", promhttp.Handler())
-					http.ListenAndServe(fmt.Sprintf(":%d", config.HTTP.Port), nil)
+					srv := api.NewServer(dbClient, api.WithLogger(tools.logger))
 
-					return nil
+					srv.RawHandler("GET", "/metrics", promhttp.Handler())
+
+					return srv.ListenAndServe(fmt.Sprintf(":%d", config.HTTP.Port))
 				},
 			},
 			{

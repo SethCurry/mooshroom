@@ -62,6 +62,12 @@ func (s *Server) Handle(method, path string, handler Handler) {
 	})
 }
 
-func (s *Server) Start(listenAddr string) error {
+func (s *Server) RawHandler(method string, path string, handler http.Handler) {
+	s.router.Handle(method, path, func(w http.ResponseWriter, r *http.Request, pq httprouter.Params) {
+		handler.ServeHTTP(w, r)
+	})
+}
+
+func (s *Server) ListenAndServe(listenAddr string) error {
 	return http.ListenAndServe(listenAddr, s.router)
 }
