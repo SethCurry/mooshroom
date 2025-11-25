@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/SethCurry/mooshroom/internal/models"
@@ -18,7 +19,11 @@ type RequestContext struct {
 	DB      *models.Client
 }
 
-type Handler func(ctx RequestContext) error
+func (r *RequestContext) Context() context.Context {
+	return r.Request.Context()
+}
+
+type Handler func(ctx *RequestContext) error
 
 func WithLogger(logger *zap.Logger) ServerOption {
 	return func(s *Server) {
@@ -48,7 +53,7 @@ type Server struct {
 
 func (s *Server) Handle(method, path string, handler Handler) {
 	s.router.Handle(method, path, func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		err := handler(RequestContext{
+		err := handler(&RequestContext{
 			Writer:  w,
 			Request: r,
 			Params:  ps,

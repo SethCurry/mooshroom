@@ -18,5 +18,7 @@ tasks:
     cmds:
       - docker-compose down
   psql:
+    env:
+      PGPASSWORD: postgres
     cmds:
       - psql -h localhost -U postgres -p 15432

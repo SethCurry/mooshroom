@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"time"
+
+	"github.com/Masterminds/squirrel"
 )
 
 type DHTSensorDataClient struct {
@@ -22,4 +24,42 @@ func (d *DHTSensorDataClient) Create(ctx context.Context, atTime time.Time, sens
 	}
 
 	return nil
+}
+
+type DHTSensorData struct {
+	Timestamp   time.Time
+	Temperature float32
+	Humidity    float32
+}
+
+func (d *DHTSensorDataClient) ListForSensorID(ctx context.Context, sensorID int) ([]*DHTSensorData, error) {
+	query, vars, err := d.client.builder.Select("time", "temperature", "humidity").From("dht_data").Where(squirrel.Eq{"sensor_id": sensorID}).OrderBy("time").ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build SQL query to get DHT sensor data for sensor %d: %w", sensorID, err)
+	}
+
+	rows, err := d.client.conn.Query(ctx, query, vars...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute SQL query to get DHT sensor data for sensor %d: %w", sensorID, err)
+	}
+
+	var result []*DHTSensorData
+
+	for rows.Next() {
+		var ts time.Time
+		var temperature, humidity float32
+
+		err = rows.Scan(&ts, &temperature, &humidity)
+		if err != nil {
+			return nil, fmt.Errorf("failed while scanning rows listing DHT sensor data for sensor %d: %w", sensorID, err)
+		}
+
+		result = append(result, &DHTSensorData{
+			Timestamp:   ts,
+			Temperature: temperature,
+			Humidity:    humidity,
+		})
+	}
+
+	return result, nil
 }

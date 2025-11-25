@@ -7,6 +7,7 @@ import (
 	"regexp"
 
 	"github.com/SethCurry/mooshroom/internal/api"
+	"github.com/SethCurry/mooshroom/internal/api/endpoints"
 	"github.com/SethCurry/mooshroom/internal/models"
 	"github.com/SethCurry/mooshroom/internal/mooshroom"
 	"github.com/SethCurry/mooshroom/internal/mqtt"
@@ -115,6 +116,8 @@ func main() {
 					srv := api.NewServer(dbClient, api.WithLogger(tools.logger))
 
 					srv.RawHandler("GET", "/metrics", promhttp.Handler())
+					srv.Handle("GET", "/api/v1/spores", endpoints.ListSpores)
+					srv.Handle("GET", "/api/v1/dht_sensors/:dht_sensor_id/data", endpoints.ListDHTSensorData)
 
 					return srv.ListenAndServe(fmt.Sprintf(":%d", config.HTTP.Port))
 				},

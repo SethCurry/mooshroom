@@ -27,6 +27,44 @@ func (d *DHTSensorClient) Create(ctx context.Context, name string, pin int, spor
 	return id, nil
 }
 
+type ListSensorsForSporeIDResult struct {
+	ID   int
+	Name string
+	Pin  int
+}
+
+func (d *DHTSensorClient) ListSensorsForSporeID(ctx context.Context, sporeID int) ([]*ListSensorsForSporeIDResult, error) {
+	query, vars, err := d.client.builder.Select("id", "name", "gpio_pin").From("dht_sensors").Where(squirrel.Eq{"spore_id": sporeID}).ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build query to get DHT sensors for spore ID %d: %w", sporeID, err)
+	}
+
+	rows, err := d.client.conn.Query(ctx, query, vars...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute SQL query to get DHT sensors for spore ID %d: %w", sporeID, err)
+	}
+
+	var results []*ListSensorsForSporeIDResult
+
+	for rows.Next() {
+		var id, pin int
+		var name string
+
+		err = rows.Scan(&id, &name, &pin)
+		if err != nil {
+			return nil, fmt.Errorf("failed while scanning rows for DHT sensors of spore %d: %w", sporeID, err)
+		}
+
+		results = append(results, &ListSensorsForSporeIDResult{
+			ID:   id,
+			Name: name,
+			Pin:  pin,
+		})
+	}
+
+	return results, nil
+}
+
 func (d *DHTSensorClient) GetIDBySporeIDAndPin(ctx context.Context, sporeID int, pin int) (int, error) {
 	query, vars, err := d.client.builder.Select("id").From("dht_sensors").Where(squirrel.Eq{"spore_id": sporeID, "gpio_pin": pin}).ToSql()
 	if err != nil {
