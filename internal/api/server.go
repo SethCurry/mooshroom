@@ -2,6 +2,8 @@ package api
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/SethCurry/mooshroom/internal/models"
@@ -21,6 +23,18 @@ type RequestContext struct {
 
 func (r *RequestContext) Context() context.Context {
 	return r.Request.Context()
+}
+
+func (r *RequestContext) JSONResponse(status int, body interface{}) error {
+	marshalled, err := json.Marshal(body)
+	if err != nil {
+		return fmt.Errorf("failed to marshal JSON: %w", err)
+	}
+
+	r.Writer.Header().Set("Content-Type", "application/json")
+	r.Writer.WriteHeader(status)
+	r.Writer.Write(marshalled)
+	return nil
 }
 
 type Handler func(ctx *RequestContext) error

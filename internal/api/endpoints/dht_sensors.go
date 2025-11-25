@@ -1,7 +1,6 @@
 package endpoints
 
 import (
-	"encoding/json"
 	"fmt"
 	"strconv"
 	"time"
@@ -46,13 +45,5 @@ func ListDHTSensorData(req *api.RequestContext) error {
 		Readings: formattedReadings,
 	}
 
-	marshalled, err := json.Marshal(response)
-	if err != nil {
-		return fmt.Errorf("failed to marshal DHT sensor data: %w", err)
-	}
-
-	req.Writer.WriteHeader(200)
-	req.Writer.Write(marshalled)
-
-	return nil
+	return req.JSONResponse(200, response)
 }

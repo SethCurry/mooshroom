@@ -1,7 +1,6 @@
 package endpoints
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/SethCurry/mooshroom/internal/api"
@@ -56,13 +55,5 @@ func ListSpores(req *api.RequestContext) error {
 		Spores: responseItems,
 	}
 
-	marshalled, err := json.Marshal(response)
-	if err != nil {
-		return fmt.Errorf("failed to build JSON response for list of spores: %w", err)
-	}
-
-	req.Writer.WriteHeader(200)
-	req.Writer.Write(marshalled)
-
-	return nil
+	return req.JSONResponse(200, response)
 }
