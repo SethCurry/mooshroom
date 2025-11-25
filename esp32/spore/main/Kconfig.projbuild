@@ -44,5 +44,10 @@ menu "Mooshroom"
       int "DHT GPIO pin"
       help
         The GPIO pin used for the DHT sensor
+    config DHT_PUBLISH_INTERVAL_SECONDS
+      int "DHT Publish Interval Seconds"
+      default 15
+      help
+        The delay between publishing DHT statistics.
   endmenu
 endmenu

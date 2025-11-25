@@ -72,6 +72,6 @@ extern "C" void app_main(void)
         mqttClient.publish(mqttTopic, readingJson);
 
         free(readingJson);
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        vTaskDelay((CONFIG_DHT_PUBLISH_INTERVAL_SECONDS * 1000) / portTICK_PERIOD_MS);
     }
 }
