@@ -1,102 +1,96 @@
 @startuml
-!procedure $pin($name, $attributes)
-    card $name [
+
+
+!procedure $pin($boardname, $name, $below, $attributes)
+    card %string($boardname+"_"+$name) [
         <b>$name</b>
         !foreach $item in %splitstr($attributes, " ")
         <size:10>$item
         !endfor
     ]
+
+    [%string($boardname+"_"+$below)] -[hidden]down- [%string($boardname+"_"+$name)]
 !endprocedure
 
-node esp {
-    card 3V3_1
-    card 3V3_2
-    [3V3_1] -[hidden]down- [3V3_2]
-    card RST
-    [3V3_2] -[hidden]down- [RST]
-    $pin("GPIO4", "ADC1_3 TOUCH4 RTC")
-    [RST] -[hidden]down- [GPIO4]
-    $pin("GPIO5", "ADC1_4 TOUCH5 RTC")
-    [GPIO4] -[hidden]down- [GPIO5]
-    $pin("GPIO6", "ADC1_5 TOUCH6 RTC")
-    [GPIO5] -[hidden]down- [GPIO6]
-    $pin("GPIO7", "ADC1_6 TOUCH7 RTC")
-    [GPIO6] -[hidden]down- [GPIO7]
-    $pin("GPIO15", "XTAL_32K_P ADC2_4 U0RTS RTC")
-    [GPIO7] -[hidden]down- [GPIO15]
-    $pin("GPIO16", "XTAL_32K_N ADC2_5 U0CTS RTC")
-    [GPIO15] -[hidden]down- [GPIO16]
-    $pin("GPIO17", "ADC2_6 U1TXD RTC")
-    [GPIO16] -[hidden]down- [GPIO17]
-    $pin("GPIO18", "CLK_OUT3 ADC2_7 U1RXD RTC")
-    [GPIO17] -[hidden]down- [GPIO18]
-    $pin("GPIO8", "ADC1_7 TOUCH8 RTC")
-    [GPIO18] -[hidden]down- [GPIO8]
-    $pin("GPIO3", "JTAG ADC1_2 TOUCH3 RTC")
-    [GPIO8] -[hidden]down- [GPIO3]
-    $pin("GPIO46", "LOG")
-    [GPIO3] -[hidden]down- [GPIO46]
-    $pin("GPIO9", "FSPIHD SUBSPIHD ADC1_8 TOUCH9 RTC")
-    [GPIO46] -[hidden]down- [GPIO9]
-    $pin("GPIO10", "FSPICS0 SUBSPICS0 FSPIIO4 ADC1_9 TOUCH10 RTC")
-    [GPIO9] -[hidden]down- [GPIO10]
-    $pin("GPIO11", "FSPID SUBSPID FSPIIO5 ADC2_0 TOUCH11 RTC")
-    [GPIO10] -[hidden]down- [GPIO11]
-    $pin("GPIO12", "FSPICLK SUBSPICLK FSPIIO6 ADC2_1 TOUCH12 RTC")
-    [GPIO11] -[hidden]down- [GPIO12]
-    $pin("GPIO13", "FSPIQ SUBSPIQ FSPIIO7 ADC2_2 TOUCH13 RTC")
-    [GPIO12] -[hidden]down- [GPIO13]
-    $pin("GPIO14", "FSPIWP SUBSPIWP FSPIDQS ADC2_3 TOUCH14 RTC")
-    [GPIO13] -[hidden]down- [GPIO14]
-    card 5V0
-    [GPIO14] -[hidden]down- [5V0]
-    card GND_1
-    [5V0] -[hidden]down- [GND_1]
+!procedure $esp($name)
+    node $name {
+        card %string($name+"_3V3_1") [
+            3V3
+        ]
+        card %string($name+"_3V3_2") [
+            3V3
+        ]
 
-    card GND_2
-    [3V3_1] -[hidden]right- [GND_2]
+        [%string($name+"_3V3_1")] -[hidden]down- [%string($name+"_3V3_2")]
+        card %string($name+"_RST") [
+            RST
+        ]
+        [%string($name+"_3V3_2")] -[hidden]down- [%string($name+"_RST")]
 
-    $pin("GPIO43", "U0TXD CLK_OUT1")
-    [GND_2] -[hidden]down- [GPIO43]
-    $pin("GPIO44", "U0RXD CLK_OUT2")
-    [GPIO43] -[hidden]down- [GPIO44]
-    $pin("GPIO1", "ADC1_0 TOUCH1 RTC")
-    [GPIO44] -[hidden]down- [GPIO1]
-    $pin("GPIO2", "ADC1_1 TOUCH2 RTC")
-    [GPIO1] -[hidden]down- [GPIO2]
-    $pin("GPIO42", "MTMS")
-    [GPIO2] -[hidden]down- [GPIO42]
-    $pin("GPIO41", "MTDI CLK_OUT1")
-    [GPIO42] -[hidden]down- [GPIO41]
-    $pin("GPIO40", "MTDO CLK_OUT2")
-    [GPIO41] -[hidden]down- [GPIO40]
-    $pin("GPIO39", "MTCK CLK_OUT3 SUBSPICS1")
-    [GPIO40] -[hidden]down- [GPIO39]
-    $pin("GPIO38", "FSPIWP SUBSPIWP RGB_LED")
-    [GPIO39] -[hidden]down- [GPIO38]
-    $pin("GPIO37", "SPIDQS FSPIQ SUBSPIQ")
-    [GPIO38] -[hidden]down- [GPIO37]
-    $pin("GPIO36", "SPIIO7 FSPICLK SUBSPICLK")
-    [GPIO37] -[hidden]down- [GPIO36]
-    $pin("GPIO35", "SPIIO6 FSPID SUBSPID")
-    [GPIO36] -[hidden]down- [GPIO35]
-    $pin("GPIO0", "BOOT")
-    [GPIO35] -[hidden]down- [GPIO0]
-    $pin("GPIO45", "VSPI")
-    [GPIO0] -[hidden]down- [GPIO45]
-    $pin("GPIO48", "SPICLK_N")
-    [GPIO45] -[hidden]down- [GPIO48]
-    $pin("GPIO47", "SPICLK_P")
-    [GPIO48] -[hidden]down- [GPIO47]
-    $pin("GPIO21", "RTC")
-    [GPIO47] -[hidden]down- [GPIO21]
-    $pin("GPIO20", "USB_D+ U1CTS ADC2_9 CLK_OUT1 RTC")
-    [GPIO21] -[hidden]down- [GPIO20]
-    $pin("GPIO19", "USB_D- U1RTS ADC2_8 CLK_OUT2 RTC")
-    [GPIO20] -[hidden]down- [GPIO19]
-    card GND_3
-    [GPIO19] -[hidden]down- [GND_3]
-    card GND_4
-    [GND_3] -[hidden]down- [GND_4]
-}
+        $pin($name, "GPIO4", "RST", "ADC1_3 TOUCH4 RTC")
+        $pin($name, "GPIO5", "GPIO4", "ADC1_4 TOUCH5 RTC")
+        $pin($name, "GPIO6", "GPIO5", "ADC1_5 TOUCH6 RTC")
+        $pin($name, "GPIO7", "GPIO6", "ADC1_6 TOUCH7 RTC")
+        $pin($name, "GPIO15", "GPIO7", "XTAL_32K_P ADC2_4 U0RTS RTC")
+        $pin($name, "GPIO16", "GPIO15", "XTAL_32K_N ADC2_5 U0CTS RTC")
+        $pin($name, "GPIO17", "GPIO16", "ADC2_6 U1TXD RTC")
+        $pin($name, "GPIO18", "GPIO17", "CLK_OUT3 ADC2_7 U1RXD RTC")
+        $pin($name, "GPIO8", "GPIO18", "ADC1_7 TOUCH8 RTC")
+        $pin($name, "GPIO3", "GPIO8", "JTAG ADC1_2 TOUCH3 RTC")
+        $pin($name, "GPIO46", "GPIO3", "LOG")
+        $pin($name, "GPIO9", "GPIO46", "FSPIHD SUBSPIHD ADC1_8 TOUCH9 RTC")
+        $pin($name, "GPIO10", "GPIO9", "FSPICS0 SUBSPICS0 FSPIIO4 ADC1_9 TOUCH10 RTC")
+        $pin($name, "GPIO11", "GPIO10", "FSPID SUBSPID FSPIIO5 ADC2_0 TOUCH11 RTC")
+        $pin($name, "GPIO12", "GPIO11", "FSPICLK SUBSPICLK FSPIIO6 ADC2_1 TOUCH12 RTC")
+        $pin($name, "GPIO13", "GPIO12", "FSPIQ SUBSPIQ FSPIIO7 ADC2_2 TOUCH13 RTC")
+        $pin($name, "GPIO14", "GPIO13", "FSPIWP SUBSPIWP FSPIDQS ADC2_3 TOUCH14 RTC")
+
+        card %string($name+"_5V0") [
+            5V0
+        ]
+        [%string($name+"_GPIO14")] -[hidden]down- [%string($name+"_5V0")]
+
+        card %string($name+"_GND_1") [
+            GND
+        ]
+        [%string($name+"_5V0")] -[hidden]down- [%string($name+"_GND_1")]
+
+        card %string($name+"_GND_2") [
+            GND
+        ]
+
+        [%string($name+"_3V3_1")] -[hidden]right- [%string($name+"_GND_2")]
+
+        $pin($name, "GPIO43", "GND_2", "U0TXD CLK_OUT1")
+        $pin($name, "GPIO44", "GPIO43", "U0RXD CLK_OUT2")
+        $pin($name, "GPIO1", "GPIO44", "ADC1_0 TOUCH1 RTC")
+        $pin($name, "GPIO2", "GPIO1", "ADC1_1 TOUCH2 RTC")
+        $pin($name, "GPIO42", "GPIO2", "MTMS")
+        $pin($name, "GPIO41", "GPIO42", "MTDI CLK_OUT1")
+        $pin($name, "GPIO40", "GPIO41", "MTDO CLK_OUT2")
+        $pin($name, "GPIO39", "GPIO40", "MTCK CLK_OUT3 SUBSPICS1")
+        $pin($name, "GPIO38", "GPIO39", "FSPIWP SUBSPIWP RGB_LED")
+        $pin($name, "GPIO37", "GPIO38", "SPIDQS FSPIQ SUBSPIQ")
+        $pin($name, "GPIO36", "GPIO37", "SPIIO7 FSPICLK SUBSPICLK")
+        $pin($name, "GPIO35", "GPIO36", "SPIIO6 FSPID SUBSPID")
+        $pin($name, "GPIO0", "GPIO35", "BOOT")
+        $pin($name, "GPIO45", "GPIO0", "VSPI")
+        $pin($name, "GPIO48", "GPIO45", "SPICLK_N")
+        $pin($name, "GPIO47", "GPIO48", "SPICLK_P")
+        $pin($name, "GPIO21", "GPIO47", "RTC")
+        $pin($name, "GPIO20", "GPIO21", "USB_D+ U1CTS ADC2_9 CLK_OUT1 RTC")
+        $pin($name, "GPIO19", "GPIO20", "USB_D- U1RTS ADC2_8 CLK_OUT2 RTC")
+
+        card %string($name+"_GND_3") [
+            GND
+        ]
+        [%string($name+"_GPIO19")] -[hidden]down- [%string($name+"_GND_3")]
+
+        card %string($name+"_GND_4") [
+            GND
+        ]
+        [%string($name+"_GND_3")] -[hidden]down- [%string($name+"_GND_4")]
+    }
+!endprocedure
+
 @enduml

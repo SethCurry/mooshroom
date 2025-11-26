@@ -1,3 +1,5 @@
 @startuml "Mooshroom Wiring"
 !include lib/esp32.puml
+
+$esp("spore")
 @enduml
