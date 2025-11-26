@@ -1,11 +1,12 @@
 @startuml "Mooshroom Wiring"
+!theme blueprint
 !include lib/esp32.puml
+!include lib/dht22.puml
 
 $esp("spore")
+$dht22("DHT22")
 
-node DHT
-
-[spore_3V3_1] --> [DHT]
-[spore_GND_1] --> [DHT]
-[spore_GPIO15] --> [DHT]
+[spore_3V3_1] --> [DHT22_VCC]
+[spore_GND_1] --> [DHT22_GND]
+[spore_GPIO15] --> [DHT22_data]
 @enduml
