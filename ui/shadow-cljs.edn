@@ -4,6 +4,7 @@
                 [reagent "1.1.1"]
                 [reagent-utils "0.3.4"]
                 [metosin/reitit "0.5.18"]
+                [cljs-http "0.1.49"]
                 [venantius/accountant "0.2.5"
                  :exclusions [org.clojure/tools.reader]]]
  :builds       {:app {:target     :browser
