@@ -2,4 +2,10 @@
 !include lib/esp32.puml
 
 $esp("spore")
+
+node DHT
+
+[spore_3V3_1] --> [DHT]
+[spore_GND_1] --> [DHT]
+[spore_GPIO15] --> [DHT]
 @enduml

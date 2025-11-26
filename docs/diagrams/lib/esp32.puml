@@ -90,6 +90,7 @@
             GND
         ]
         [%string($name+"_GND_3")] -[hidden]down- [%string($name+"_GND_4")]
+        [%string($name+"_GND_4")] -[hidden]left- [%string($name+"_GND_1")]
     }
 !endprocedure
 
