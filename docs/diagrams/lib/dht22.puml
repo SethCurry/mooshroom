@@ -2,16 +2,20 @@
 !procedure $dht22($name)
     node $name {
         card %string($name+"_VCC") [
+            <b>VCC</b>
             3.5V-5.5V
         ]
 
         card %string($name+"_data") [
-            Data
+            <b>Data</b>
         ]
 
         card %string($name+"_GND") [
-            GND
+            <b>GND</b>
         ]
+
+        [%string($name+"_VCC")] -[hidden]right- [%string($name+"_data")]
+        [%string($name+"_data")] -[hidden]right- [%string($name+"_GND")]
     }
 !endprocedure
 @enduml
