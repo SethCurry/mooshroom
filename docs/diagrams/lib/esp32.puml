@@ -1,6 +1,5 @@
 @startuml
 
-
 !procedure $pin($boardname, $name, $below, $attributes)
     card %string($boardname+"_"+$name) [
         <b>$name</b>
@@ -14,6 +13,7 @@
 
 !procedure $esp($name)
     node $name {
+        together {
         card %string($name+"_3V3_1") [
             3V3
         ]
@@ -55,12 +55,15 @@
         ]
         [%string($name+"_5V0")] -[hidden]down- [%string($name+"_GND_1")]
 
+        
+        }
+
+        '[%string($name+"_3V3_1")] -[hidden]right- [%string($name+"_GND_2")]
+
+        together {
         card %string($name+"_GND_2") [
             GND
         ]
-
-        [%string($name+"_3V3_1")] -[hidden]right- [%string($name+"_GND_2")]
-
         $pin($name, "GPIO43", "GND_2", "U0TXD CLK_OUT1")
         $pin($name, "GPIO44", "GPIO43", "U0RXD CLK_OUT2")
         $pin($name, "GPIO1", "GPIO44", "ADC1_0 TOUCH1 RTC")
@@ -90,7 +93,10 @@
             GND
         ]
         [%string($name+"_GND_3")] -[hidden]down- [%string($name+"_GND_4")]
-        [%string($name+"_GND_4")] -[hidden]left- [%string($name+"_GND_1")]
+        }
+
+        '[%string($name + "_left_side")] -[hidden]right- [%string($name + "_right_side")]
+        '[%string($name + "_right_side")] -[hidden]left- [%string($name + "_left_side")]
     }
 !endprocedure
 
