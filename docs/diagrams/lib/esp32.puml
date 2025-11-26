@@ -1,0 +1,91 @@
+node esp {
+    circle 3V3_1
+    circle 3V3_2
+    [3V3_1] -[hidden]down- [3V3_2]
+    circle RST
+    [3V3_2] -[hidden]down- [RST]
+    circle GPIO4
+    [RST] -[hidden]down- [GPIO4]
+    circle GPIO5
+    [GPIO4] -[hidden]down- [GPIO5]
+    circle GPIO6
+    [GPIO5] -[hidden]down- [GPIO6]
+    circle GPIO7
+    [GPIO6] -[hidden]down- [GPIO7]
+    circle GPIO15
+    [GPIO7] -[hidden]down- [GPIO15]
+    circle GPIO16
+    [GPIO15] -[hidden]down- [GPIO16]
+    circle GPIO17
+    [GPIO16] -[hidden]down- [GPIO17]
+    circle GPIO18
+    [GPIO17] -[hidden]down- [GPIO18]
+    circle GPIO8
+    [GPIO18] -[hidden]down- [GPIO8]
+    circle GPIO3
+    [GPIO8] -[hidden]down- [GPIO3]
+    circle GPIO46
+    [GPIO3] -[hidden]down- [GPIO46]
+    circle GPIO9
+    [GPIO46] -[hidden]down- [GPIO9]
+    circle GPIO10
+    [GPIO9] -[hidden]down- [GPIO10]
+    circle GPIO11
+    [GPIO10] -[hidden]down- [GPIO11]
+    circle GPIO12
+    [GPIO11] -[hidden]down- [GPIO12]
+    circle GPIO13
+    [GPIO12] -[hidden]down- [GPIO13]
+    circle GPIO14
+    [GPIO13] -[hidden]down- [GPIO14]
+    circle 5V0
+    [GPIO14] -[hidden]down- [5V0]
+    circle GND_1
+    [5V0] -[hidden]down- [GND_1]
+
+    circle GND_2
+    [3V3_1] -[hidden]right- [GND_2]
+
+    circle GPIO43
+    [GND_2] -[hidden]down- [GPIO43]
+    circle GPIO44
+    [GPIO43] -[hidden]down- [GPIO44]
+    circle GPIO1
+    [GPIO44] -[hidden]down- [GPIO1]
+    circle GPIO2
+    [GPIO1] -[hidden]down- [GPIO2]
+    circle GPIO42
+    [GPIO2] -[hidden]down- [GPIO42]
+    circle GPIO41
+    [GPIO42] -[hidden]down- [GPIO41]
+    circle GPIO40
+    [GPIO41] -[hidden]down- [GPIO40]
+    circle GPIO39
+    [GPIO40] -[hidden]down- [GPIO39]
+    circle GPIO38
+    [GPIO39] -[hidden]down- [GPIO38]
+    circle GPIO37
+    [GPIO38] -[hidden]down- [GPIO37]
+    circle GPIO36
+    [GPIO37] -[hidden]down- [GPIO36]
+    circle GPIO35
+    [GPIO36] -[hidden]down- [GPIO35]
+    circle GPIO0
+    [GPIO35] -[hidden]down- [GPIO0]
+    circle GPIO45
+    [GPIO0] -[hidden]down- [GPIO45]
+    circle GPIO48
+    [GPIO45] -[hidden]down- [GPIO48]
+    circle GPIO47
+    [GPIO48] -[hidden]down- [GPIO47]
+    circle GPIO21
+    [GPIO47] -[hidden]down- [GPIO21]
+    circle GPIO20
+    [GPIO21] -[hidden]down- [GPIO20]
+    circle GPIO19
+    [GPIO20] -[hidden]down- [GPIO19]
+    circle GND_3
+    [GPIO19] -[hidden]down- [GND_3]
+    circle GND_4
+    [GND_3] -[hidden]down- [GND_4]
+}
