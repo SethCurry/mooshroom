@@ -1,8 +1,10 @@
 (ns ui.layouts
-  (:require [ui.components.colors :as colors]))
+  (:require [ui.components.styles :as styles]
+            [ui.components.navbar :as navbar]))
 
 (defn base [& children]
-  [:div {:style {:background-color colors/off-white :width "100%" :height "100%"}}
-   [:div {:style {:height "3rem" :width "100%" :background-color colors/dark-brown :color colors/off-white}}
-    [:span {:style {:font-size "2rem"}} "Mooshroom"]]
+  [:div {:style (->>{:width "100%" :height "100%"}
+                 styles/off-white-bg)}
+   [navbar/navbar [["Home" "/"]
+                   ["Spores" "/spores"]]]
    children])

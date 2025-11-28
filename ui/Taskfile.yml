@@ -8,4 +8,5 @@ vars:
 tasks:
   dev:
     cmds:
+      - npm install
       - npx shadow-cljs watch app
