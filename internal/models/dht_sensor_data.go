@@ -32,8 +32,8 @@ type DHTSensorData struct {
 	Humidity    float32
 }
 
-func (d *DHTSensorDataClient) ListForSensorID(ctx context.Context, sensorID int) ([]*DHTSensorData, error) {
-	query, vars, err := d.client.builder.Select("time", "temperature", "humidity").From("dht_data").Where(squirrel.Eq{"sensor_id": sensorID}).OrderBy("time").ToSql()
+func (d *DHTSensorDataClient) ListForSensorID(ctx context.Context, sensorID int, startTime time.Time, endTime time.Time) ([]*DHTSensorData, error) {
+	query, vars, err := d.client.builder.Select("time", "temperature", "humidity").From("dht_data").Where(squirrel.Eq{"sensor_id": sensorID}, squirrel.Lt{"time": endTime}, squirrel.Gt{"time": startTime}).OrderBy("time").ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("failed to build SQL query to get DHT sensor data for sensor %d: %w", sensorID, err)
 	}

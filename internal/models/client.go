@@ -5,11 +5,11 @@ import (
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func NewClient(ctx context.Context, dsn string) (*Client, error) {
-	conn, err := pgx.Connect(ctx, dsn)
+	conn, err := pgxpool.New(ctx, dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to Postgres: %w", err)
 	}
@@ -22,7 +22,7 @@ func NewClient(ctx context.Context, dsn string) (*Client, error) {
 
 type Client struct {
 	builder squirrel.StatementBuilderType
-	conn    *pgx.Conn
+	conn    *pgxpool.Pool
 }
 
 func (c *Client) DHTSensors() *DHTSensorClient {

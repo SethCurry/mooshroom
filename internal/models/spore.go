@@ -98,7 +98,7 @@ type GetSporeResult struct {
 }
 
 func (s *SporeClient) GetByID(ctx context.Context, id int) (*GetSporeResult, error) {
-	query, vars, err := s.client.builder.Select("name").From("spores").ToSql()
+	query, vars, err := s.client.builder.Select("name").From("spores").Where(squirrel.Eq{"id": id}).ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("failed to build query to list spores: %w", err)
 	}
