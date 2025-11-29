@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"math/rand/v2"
 	"os"
 	"regexp"
 	"time"
@@ -153,8 +155,32 @@ func main() {
 								return err
 							}
 
+							var lastTemp float32 = 20
+							var lastHumid float32 = 40
+
 							for {
-								client.Publish(config.MQTT.Prefix+"/spores/test_node/dht_data", mqtt.QoS0, false, []byte(`{"pin": 1, "temperature": 20.0, "humidity": 40.0}`))
+								tempAdjust := rand.Float32()
+								if rand.IntN(2) == 0 || lastTemp > 99 {
+									tempAdjust = tempAdjust * -1
+								}
+								humidAdjust := rand.Float32()
+								if rand.IntN(2) == 0 || lastHumid > 99 {
+									humidAdjust = humidAdjust * -1
+								}
+								lastTemp += tempAdjust
+								lastHumid += humidAdjust
+
+								msg := &spore.DHTDataMessage{
+									Pin:         1,
+									Temperature: lastTemp,
+									Humidity:    lastHumid,
+								}
+
+								data, err := json.Marshal(msg)
+								if err != nil {
+									continue
+								}
+								client.Publish(config.MQTT.Prefix+"/spores/test_node/dht_data", mqtt.QoS0, false, data)
 								time.Sleep(15 * time.Second)
 							}
 							return nil
