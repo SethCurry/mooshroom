@@ -14,6 +14,9 @@ tasks:
     cmds:
       - goose down
       - docker-compose stop
+  caddy:
+    cmds:
+      - caddy run --config Caddyfile
   reset:
     cmds:
       - docker-compose down

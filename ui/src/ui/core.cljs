@@ -6,7 +6,8 @@
    [accountant.core :as accountant]
    [reitit.frontend :as reitit]
    [reagent.session :as session]
-   [ui.layouts :as layouts]))
+   [ui.layouts :as layouts]
+   [ui.pages.spores :as spores]))
 
 ;; -------------------------
 ;; Views
@@ -27,6 +28,7 @@
 (def router
   (reitit/router
    [["/" :index]
+    ["/spores" :spores]
     ["/items"
      ["" :items]
      ["/:item-id" :item]]
@@ -42,7 +44,7 @@
 
 (defn home-page []
   (fn []
-     [:h1 "Welcome to {{name}}"]))
+    [:h1 "Welcome to {{name}}"]))
 
 
 
@@ -78,7 +80,8 @@
     :index #'home-page
     :about #'about-page
     :items #'items-page
-    :item #'item-page))
+    :item #'item-page
+    :spores #(spores/spores-list)))
 
 
 ;; -------------------------
@@ -104,8 +107,7 @@
             current-page (:name (:data  match))
             route-params (:path-params match)]
         (session/put! :route {:current-page (page-for current-page)
-                              :route-params route-params})
-        ))
+                              :route-params route-params})))
     :path-exists?
     (fn [path]
       (boolean (reitit/match-by-path router path)))})

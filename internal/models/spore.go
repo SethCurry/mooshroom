@@ -32,6 +32,7 @@ func (s *SporeClient) Query(ctx context.Context) ([]*SporeQueryResult, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute SQL to list spores: %w", err)
 	}
+	defer rows.Close()
 
 	var results []*SporeQueryResult
 

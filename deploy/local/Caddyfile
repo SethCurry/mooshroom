@@ -1,0 +1,10 @@
+:18081 {
+    encode
+    handle /api/* {
+        reverse_proxy localhost:18080
+    }
+
+    handle {
+        reverse_proxy localhost:3000
+    }
+}
