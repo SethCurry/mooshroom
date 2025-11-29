@@ -13,6 +13,8 @@
                      styles/off-white-text
                      styles/flex-row
                      styles/gap-sm)}
-   (div/vertically-centered [:span {:style {:font-size "2rem"}} "Mooshroom"])
+   [:img {:src "/img/logo.png" :style {:height "100%" :width "auto" :margin-left "0.5vw"}}]
+   (div/vertically-centered [:span {:style (->> {:font-size "2rem"}
+                                                styles/font-splash)} "Mooshroom"])
    (map #(navbar-link (first %) (second %))
         links)])

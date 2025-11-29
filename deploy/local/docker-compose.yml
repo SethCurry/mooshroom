@@ -5,3 +5,10 @@ services:
       - 15432:5432
     environment:
       POSTGRES_PASSWORD: postgres
+  nats:
+    image: nats:latest
+    command: "-c /nats.conf"
+    volumes:
+      - ./nats.conf:/nats.conf
+    ports:
+      - 11883:1883

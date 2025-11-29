@@ -6,7 +6,7 @@ html {
 }
 
 body {
-  font-family: "Helvetica Neue", Verdana, Helvetica, Arial, sans-serif;
+  font-family: "Fell", serif;
   width: 100vw;
   height: 100vh;
   margin: 0px;
@@ -18,4 +18,25 @@ body {
   height: 100%;
   margin: 0px;
   padding: 0px;
+}
+
+@font-face {
+  font-family: "Fell", serif;
+  font-style: normal;
+  font-weight: 400;
+  src: url("/font/IMFellGreatPrimer-Regular.ttf");
+}
+
+@font-face {
+  font-family: "Fell", serif;
+  font-style: italic;
+  font-weight: 400;
+  src: url("/font/IMFellGreatPrimer-Italic.ttf");
+}
+
+@font-face {
+  font-family: "Splash", cursive;
+  font-style: normal;
+  font-weight: 400;
+  src: url("/font/Splash-Regular.ttf");
 }

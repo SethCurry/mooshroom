@@ -19,3 +19,9 @@
 
 (defn gap-sm [s]
   (assoc s :gap "1rem"))
+
+(defn font-fell [s]
+  (assoc s :font-family "Fell, serif"))
+
+(defn font-splash [s]
+  (assoc s :font-family "Splash, cursive"))
