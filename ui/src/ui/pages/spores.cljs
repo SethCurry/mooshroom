@@ -2,7 +2,8 @@
   (:require [ui.api :as api]
             [cljs.core.async :refer [<!]]
             [reagent.core :as r]
-            [ui.components.table :as table])
+            [ui.components.table :as table]
+            [ui.components.chart :as chart])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn spores-list []
@@ -15,3 +16,8 @@
        (table/table ["ID" "Name"] (map (fn [spore]
                                          [(:id spore) (:name spore)])
                                        (:spores @spores)))])))
+
+(defn spore-detail []
+  [:div
+   [:h1 "Spore Detail"]
+   [chart/rev-chartjs-component]])

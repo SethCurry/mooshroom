@@ -83,7 +83,8 @@
     :about #'about-page
     :items #'items-page
     :item #'item-page
-    :spores #(spores/spores-list)))
+    :spores #(spores/spores-list)
+    :spore-detail #(spores/spore-detail)))
 
 
 ;; -------------------------
