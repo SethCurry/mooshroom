@@ -28,7 +28,9 @@
 (def router
   (reitit/router
    [["/" :index]
-    ["/spores" :spores]
+    ["/spores"
+     ["" :spores]
+     ["/:spore-id" :spore-detail]]
     ["/items"
      ["" :items]
      ["/:item-id" :item]]

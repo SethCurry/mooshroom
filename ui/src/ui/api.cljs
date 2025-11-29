@@ -5,4 +5,4 @@
 
 (defn list-spores []
   (go (let [response (:body  (<! (http/get "/api/v1/spores")))]
-        (:spores response))))
+        response)))

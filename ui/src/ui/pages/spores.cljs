@@ -1,7 +1,8 @@
 (ns ui.pages.spores
   (:require [ui.api :as api]
             [cljs.core.async :refer [<!]]
-            [reagent.core :as r])
+            [reagent.core :as r]
+            [ui.components.table :as table])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn spores-list []
@@ -11,7 +12,6 @@
       (println @spores)
       [:div
        [:h1 "Spores"]
-       [:ul
-        (doall (map (fn [spore]
-                      [:li {:key (:id spore)} (:name spore)])
-                    @spores))]])))
+       (table/table ["ID" "Name"] (map (fn [spore]
+                                         [(:id spore) (:name spore)])
+                                       (:spores @spores)))])))
