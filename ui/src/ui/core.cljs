@@ -30,11 +30,7 @@
    [["/" :index]
     ["/spores"
      ["" :spores]
-     ["/:spore-id" :spore-detail]]
-    ["/items"
-     ["" :items]
-     ["/:item-id" :item]]
-    ["/about" :about]]))
+     ["/:spore-id" :spore-detail]]]))
 
 (defn path-for [route & [params]]
   (if params
@@ -44,35 +40,12 @@
 ;; -------------------------
 ;; Page components
 
+(defn spore-link [id]
+  (path-for :spore-detail {:spore-id id}))
+
 (defn home-page []
   (fn []
-    [:h1 "Welcome to {{name}}"]))
-
-
-
-(defn items-page []
-  (fn []
-    [:span.main
-     [:h1 "The items of {{name}}"]
-     [:ul (map (fn [item-id]
-                 [:li {:name (str "item-" item-id) :key (str "item-" item-id)}
-                  [:a {:href (path-for :item {:item-id item-id})} "Item: " item-id]])
-               (range 1 60))]]))
-
-
-(defn item-page []
-  (fn []
-    (let [routing-data (session/get :route)
-          item (get-in routing-data [:route-params :item-id])]
-      [:span.main
-       [:h1 (str "Item " item " of {{name}}")]
-       [:p [:a {:href (path-for :items)} "Back to the list of items"]]])))
-
-
-(defn about-page []
-  (fn [] [:span.main
-          [:h1 "About {{name}}"]]))
-
+    [:h1 "Welcome to Mooshroom"]))
 
 ;; -------------------------
 ;; Translate routes -> page components
@@ -80,9 +53,6 @@
 (defn page-for [route]
   (case route
     :index #'home-page
-    :about #'about-page
-    :items #'items-page
-    :item #'item-page
     :spores #(spores/spores-list)
     :spore-detail #(spores/spore-detail)))
 
