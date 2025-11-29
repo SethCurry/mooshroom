@@ -1,0 +1,10 @@
+mqtt:
+  brokers:
+    - mqtt://localhost:11883
+  username: mooshroom
+  password: mooshroom
+  prefix: mooshroom
+sql:
+  url: postgresql://postgres:postgres@localhost:16543/postgres?sslmode=disable
+http:
+  port: 18080

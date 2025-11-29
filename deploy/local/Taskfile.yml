@@ -17,6 +17,14 @@ tasks:
   reset:
     cmds:
       - docker-compose down
+  sim-spore:
+    dir: ../..
+    cmds:
+      - ./mooshroom tools spore-sim -c deploy/local/config.yaml
+  backend:
+    dir: ../..
+    cmds:
+      - ./mooshroom server -c deploy/local/config.yaml
   psql:
     env:
       PGPASSWORD: postgres

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"time"
 
 	"github.com/SethCurry/mooshroom/internal/api"
 	"github.com/SethCurry/mooshroom/internal/api/endpoints"
@@ -23,9 +24,13 @@ type CLITools struct {
 	parsedConfig *mooshroom.Config
 }
 
-func (t *CLITools) getConfig() (*mooshroom.Config, error) {
+func (t *CLITools) getConfig(cmd *cli.Command) (*mooshroom.Config, error) {
 	if t.parsedConfig == nil {
-		config, err := mooshroom.ParseConfigFile("./config.yaml")
+		configPath := cmd.String("config")
+		if configPath == "" {
+			configPath = "./config.yaml"
+		}
+		config, err := mooshroom.ParseConfigFile(configPath)
 		if err != nil {
 			return nil, err
 		}
@@ -35,8 +40,8 @@ func (t *CLITools) getConfig() (*mooshroom.Config, error) {
 	return t.parsedConfig, nil
 }
 
-func (t *CLITools) getMQTTClient(clientID string) (*mqtt.Client, error) {
-	config, err := t.getConfig()
+func (t *CLITools) getMQTTClient(cmd *cli.Command, clientID string) (*mqtt.Client, error) {
+	config, err := t.getConfig(cmd)
 	if err != nil {
 		return nil, err
 	}
@@ -55,8 +60,8 @@ func (t *CLITools) getMQTTClient(clientID string) (*mqtt.Client, error) {
 	return mqtt.NewClient(opts...)
 }
 
-func (t *CLITools) getDatabaseClient() (*models.Client, error) {
-	config, err := t.getConfig()
+func (t *CLITools) getDatabaseClient(cmd *cli.Command) (*models.Client, error) {
+	config, err := t.getConfig(cmd)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get config: %w", err)
 	}
@@ -77,22 +82,30 @@ func main() {
 	cmd := &cli.Command{
 		Name:  "mooshroom",
 		Usage: "Mooshroom is a tool for growing culinary mushrooms.",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "config",
+				Usage:   "The path to the config file.",
+				Value:   "./config.yaml",
+				Aliases: []string{"c"},
+			},
+		},
 		Commands: []*cli.Command{
 			{
 				Name:  "server",
 				Usage: "Start the HTTP server and MQTT listener.",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
-					config, err := tools.getConfig()
+					config, err := tools.getConfig(cmd)
 					if err != nil {
 						return err
 					}
 
-					dbClient, err := tools.getDatabaseClient()
+					dbClient, err := tools.getDatabaseClient(cmd)
 					if err != nil {
 						return err
 					}
 
-					mqttClient, err := tools.getMQTTClient("mooshroom-server")
+					mqttClient, err := tools.getMQTTClient(cmd, "mooshroom-server")
 					if err != nil {
 						return fmt.Errorf("failed to connect to MQTT: %w", err)
 					}
@@ -127,6 +140,26 @@ func main() {
 				Usage: "Various tools for testing and debugging.",
 				Commands: []*cli.Command{
 					{
+						Name:  "spore-sim",
+						Usage: "Simulate a spore sending DHT data to the server.",
+						Action: func(ctx context.Context, cmd *cli.Command) error {
+							client, err := tools.getMQTTClient(cmd, "spore-sim")
+							if err != nil {
+								return err
+							}
+							config, err := tools.getConfig(cmd)
+							if err != nil {
+								return err
+							}
+
+							for {
+								client.Publish(config.MQTT.Prefix+"/spores/test_node/dht_data", mqtt.QoS0, false, []byte(`{"pin": 1, "temperature": 20.0, "humidity": 40.0}`))
+								time.Sleep(15 * time.Second)
+							}
+							return nil
+						},
+					},
+					{
 						Name:  "mqtt",
 						Usage: "Test the MQTT connection and subscriptions.",
 						Commands: []*cli.Command{
@@ -139,7 +172,7 @@ func main() {
 									for i := 0; i < numArgs; i++ {
 										topics[i] = cmd.Args().Get(i)
 									}
-									client, err := tools.getMQTTClient("cli-mqtt-subscribe")
+									client, err := tools.getMQTTClient(cmd, "cli-mqtt-subscribe")
 									if err != nil {
 										return err
 									}
@@ -174,7 +207,7 @@ func main() {
 								},
 								Action: func(ctx context.Context, cmd *cli.Command) error {
 									numArgs := cmd.Args().Len()
-									client, err := tools.getMQTTClient("cli-mqtt-publish")
+									client, err := tools.getMQTTClient(cmd, "cli-mqtt-publish")
 									if err != nil {
 										return err
 									}
