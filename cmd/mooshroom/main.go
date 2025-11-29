@@ -130,6 +130,7 @@ func main() {
 
 					srv.RawHandler("GET", "/metrics", promhttp.Handler())
 					srv.Handle("GET", "/api/v1/spores", endpoints.ListSpores)
+					srv.Handle("GET", "/api/v1/spores/:spore_id", endpoints.GetSpore)
 					srv.Handle("GET", "/api/v1/dht_sensors/:dht_sensor_id/data", endpoints.ListDHTSensorData)
 
 					return srv.ListenAndServe(fmt.Sprintf(":%d", config.HTTP.Port))

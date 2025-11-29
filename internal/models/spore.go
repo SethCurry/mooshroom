@@ -17,9 +17,8 @@ type SporeQueryResultDHTSensor struct {
 }
 
 type SporeQueryResult struct {
-	ID         int
-	Name       string
-	DHTSensors []*SporeQueryResultDHTSensor
+	ID   int
+	Name string
 }
 
 func (s *SporeClient) Query(ctx context.Context) ([]*SporeQueryResult, error) {
@@ -84,4 +83,50 @@ func (s *SporeClient) Create(ctx context.Context, name string) (int, error) {
 	}
 
 	return id, nil
+}
+
+type GetSporeDHTSensor struct {
+	ID   int
+	Name string
+	Pin  int
+}
+
+type GetSporeResult struct {
+	ID         int
+	Name       string
+	DHTSensors []*GetSporeDHTSensor
+}
+
+func (s *SporeClient) GetByID(ctx context.Context, id int) (*GetSporeResult, error) {
+	query, vars, err := s.client.builder.Select("name").From("spores").ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build query to list spores: %w", err)
+	}
+
+	var name string
+
+	err = s.client.conn.QueryRow(ctx, query, vars...).Scan(&name)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute SQL to list spores: %w", err)
+	}
+
+	sensors, err := s.client.DHTSensors().ListSensorsForSporeID(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list sensors for spore %d: %w", id, err)
+	}
+
+	resultSensors := make([]*GetSporeDHTSensor, len(sensors))
+	for k, v := range sensors {
+		resultSensors[k] = &GetSporeDHTSensor{
+			ID:   v.ID,
+			Name: v.Name,
+			Pin:  v.Pin,
+		}
+	}
+
+	return &GetSporeResult{
+		ID:         id,
+		Name:       name,
+		DHTSensors: resultSensors,
+	}, nil
 }

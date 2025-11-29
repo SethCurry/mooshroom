@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/SethCurry/mooshroom/internal/api"
 )
@@ -56,4 +57,45 @@ func ListSpores(req *api.RequestContext) error {
 	}
 
 	return req.JSONResponse(200, response)
+}
+
+type GetSporeDHTSensor struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+	Pin  int    `json:"pin"`
+}
+
+type GetSporeResult struct {
+	ID         int                  `json:"id"`
+	Name       string               `json:"name"`
+	DHTSensors []*GetSporeDHTSensor `json:"dht_sensors"`
+}
+
+func GetSpore(req *api.RequestContext) error {
+	sporeIDStr := req.Params.ByName("spore_id")
+
+	sporeID, err := strconv.Atoi(sporeIDStr)
+	if err != nil {
+		return fmt.Errorf("spore_id in URL is not a valid integer: %q: %w", sporeIDStr, err)
+	}
+
+	sporeResult, err := req.DB.Spores().GetByID(req.Context(), sporeID)
+	if err != nil {
+		return fmt.Errorf("failed to get spore %d: %w", sporeID, err)
+	}
+
+	dhtSensors := make([]*GetSporeDHTSensor, len(sporeResult.DHTSensors))
+	for k, v := range sporeResult.DHTSensors {
+		dhtSensors[k] = &GetSporeDHTSensor{
+			ID:   v.ID,
+			Name: v.Name,
+			Pin:  v.Pin,
+		}
+	}
+
+	return req.JSONResponse(200, &GetSporeResult{
+		ID:         sporeResult.ID,
+		Name:       sporeResult.Name,
+		DHTSensors: dhtSensors,
+	})
 }
