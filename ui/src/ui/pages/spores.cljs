@@ -4,7 +4,9 @@
             [reagent.core :as r]
             [ui.components.table :as table]
             [ui.components.chart :as chart]
-            [reagent.session :as session])
+            [reagent.session :as session]
+            [ui.components.styles :as styles]
+            [ui.components.div :as div])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn spores-list []
@@ -24,12 +26,18 @@
         spore (r/atom {})
         sensor-data (r/atom [])]
     (go (do (reset! spore (<! (api/get-spore spore-id)))
-            (doall (map (fn [sensor] (go (swap! sensor-data concat (:readings (<! (api/get-dht-data (:id sensor)))))))
-                                            (:dht_sensors @spore)))))
+            (doall (map (fn [sensor]
+                          (go (swap! sensor-data conj {:id (:id sensor) :name (:name sensor) :readings (:readings (<! (api/get-dht-data (:id sensor))))})))
+                        (:dht_sensors @spore)))))
     (fn []
       (println @sensor-data)
       [:div
        [:h1 (str "Spore: " (:name @spore))]
        (when (not (empty? @sensor-data))
-         [:div {:style {:height "50vh" :width "50vw"}}
-          [chart/climate-chart-component @sensor-data]])])))
+         [div/container
+          [:h2 {:style {:text-align "center"}} "DHT Sensors"]
+          (doall (map (fn [sensor] [:div {:style {:height "30vh" :width "25%" :display "flex" :flex-direction "column" :align-items "center" :justify-content "center"}}
+                                    [:h3 (:name sensor)]
+                                    [:div {:style {:height "25vh" :width "100%"}}
+                                     [chart/climate-chart-component (:id sensor) (:readings sensor)]]])
+                      @sensor-data))])])))

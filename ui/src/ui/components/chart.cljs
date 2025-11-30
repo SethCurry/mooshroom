@@ -26,23 +26,13 @@
 
 
 (defn show-climate-chart
-  [data]
-  (let [context (.getContext (.getElementById js/document "climate-chart") "2d")
+  [id data]
+  (let [context (.getContext (.getElementById js/document (str "climate-chart-" id)) "2d")
         chart-data {:type "line"
-                    :options {
-                              :scales {
-                                       :y {
-                                           :suggestedMin 0
-                                           :suggestedMax 100
-                                       }
-                                       :x {
-                                           :type "time"
-                                           :adapters {
-                                                      :date luxon-adapter
-                                           }
-                                       }
-                              }
-                    }
+                    :options {:scales {:y {:suggestedMin 0
+                                           :suggestedMax 100}
+                                       :x {:type "time"
+                                           :adapters {:date luxon-adapter}}}}
                     :data {:labels (seq (doall (map #(:timestamp %)
                                                     data)))
                            :datasets [{:data (doall (map #(:temperature %)
@@ -56,9 +46,9 @@
     (chartjs/Chart. context (clj->js chart-data))))
 
 (defn climate-chart-component
-  [data]
+  [id data]
   (r/create-class
-   {:component-did-mount #(show-climate-chart data)
+   {:component-did-mount #(show-climate-chart id data)
     :display-name        "chartjs-climate-component"
     :reagent-render      (fn []
-                           [:canvas {:id "climate-chart" :width "100%" :height "100%"}])}))
+                           [:canvas {:id (str "climate-chart-" id) :width "100%" :height "100%"}])}))
