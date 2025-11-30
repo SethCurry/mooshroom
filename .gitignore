@@ -3,4 +3,22 @@
 /mooshroom.exe
 .clj-kondo
 .lsp
+/target
+/classes
+/checkouts
+profiles.clj
+pom.xml
+pom.xml.asc
+*.jar
+*.class
+/.lein-*
+/.nrepl-port
+/out
+/.repl
+*.log
+/.env
+/.sass-cache
+/node_modules
+/.shadow-cljs/
+/resources/public/js/
 
