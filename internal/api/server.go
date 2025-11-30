@@ -87,6 +87,10 @@ func (s *Server) RawHandler(method string, path string, handler http.Handler) {
 	})
 }
 
+func (s *Server) NotFound(handler http.Handler) {
+	s.router.NotFound = handler
+}
+
 func (s *Server) ListenAndServe(listenAddr string) error {
 	return http.ListenAndServe(listenAddr, s.router)
 }

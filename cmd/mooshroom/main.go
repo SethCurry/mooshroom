@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"math/rand/v2"
+	"net/http"
 	"os"
 	"regexp"
 	"time"
@@ -15,6 +17,7 @@ import (
 	"github.com/SethCurry/mooshroom/internal/mooshroom"
 	"github.com/SethCurry/mooshroom/internal/mqtt"
 	"github.com/SethCurry/mooshroom/internal/spore"
+	"github.com/SethCurry/mooshroom/internal/ui"
 	paho "github.com/eclipse/paho.mqtt.golang"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/urfave/cli/v3"
@@ -134,6 +137,12 @@ func main() {
 					srv.Handle("GET", "/api/v1/spores", endpoints.ListSpores)
 					srv.Handle("GET", "/api/v1/spores/:spore_id", endpoints.GetSpore)
 					srv.Handle("GET", "/api/v1/dht_sensors/:dht_sensor_id/data", endpoints.ListDHTSensorData)
+
+					assetFS, err := fs.Sub(ui.Assets, "public")
+					if err != nil {
+						return fmt.Errorf("failed to get subdirectory \"public\" of embedded filesystem: %w", err)
+					}
+					srv.NotFound(http.FileServerFS(assetFS))
 
 					return srv.ListenAndServe(fmt.Sprintf(":%d", config.HTTP.Port))
 				},

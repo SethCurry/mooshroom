@@ -10,3 +10,8 @@ tasks:
     cmds:
       - npm install
       - npx shadow-cljs watch app
+  build:
+    cmds:
+      - npx shadow-cljs release app
+      - rm -rf ../internal/ui/public
+      - cp -r public ../internal/ui
