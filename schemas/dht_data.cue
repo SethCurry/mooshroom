@@ -1,4 +1,4 @@
-package messages
+package mooshroom
 
 #DHTMessage: {
   temperature: int

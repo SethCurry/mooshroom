@@ -1,7 +1,6 @@
 package mooshroom
 
-
-config: {
+#config: {
   mqtt: {
     brokers: [...string]
     username: string
@@ -14,10 +13,4 @@ config: {
   sql: {
     url: string
   }
-}
-
-
-DHTMessage: {
-  temperature: int
-  humidity: float
 }
