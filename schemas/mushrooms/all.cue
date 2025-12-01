@@ -9,14 +9,16 @@ import (
         common_names: ["Button Mushroom"]
         genus: "Agaricus"
         species: "bisporus"
-        humidity: {
-            min: 1
-            max: 100
-        }
-        temperature: {
-            min: 12.8
-            max: 21.1
-        }
+    }
+    {
+        common_names: ["Beech Mushroom"]
+        genus: "Hypsizygus"
+        species: "tessulatus"
+    }
+    {
+        common_names: ["Horn of Plenty", "Black Chanterelle", "Black Trumpet", "Trumpet of the Dead"]
+        genus: "Craterellus"
+        species: "cornucopioides"
     }
 ]
 
