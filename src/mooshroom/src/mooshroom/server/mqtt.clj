@@ -2,7 +2,18 @@
   (:require [clojurewerkz.machine-head.client :as mh]
             [cheshire.core :refer [parse-string]]
             [taoensso.telemere :as t]
-            [mooshroom.configuration :refer [config]]))
+            [mooshroom.configuration :refer [config]]
+            [clojure.string]))
+
+(defn handle-dht-data [topic payload]
+  (let [split-topic (clojure.string/split topic #"/")
+        topic-len (count split-topic)
+        spore-name (nth split-topic (- topic-len 2))
+        dht-pin (:pin payload)
+        ts (:time payload)
+        humidity (:humidity payload)
+        temperature (:temperature payload)]
+    (t/log! {:level :debug :msg "Received DHT data" :data {:topic topic :payload payload}})))
 
 
 (defn create-mqtt-handler [callback]

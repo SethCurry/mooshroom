@@ -12,12 +12,7 @@
   [_ _]
   (let [conn (mqtt/start-mqtt-client [[(str (:prefix (:mqtt config)) "/spores/+/dht_data")
                                        0
-                                       (fn [topic payload]
-                                         (println payload)
-                                         (t/log! {:level :debug
-                                                  :msg "saw MQTT message"
-                                                  :data {:topic topic
-                                                         :payload payload}}))]])]
+                                       mqtt/handle-dht-data]])]
     (mh/publish conn "mooshroom/spores/test/dht_data" "[1, 2, 3, 4]"))
   (run-jetty api/app {:port (:port (:http config))}))
 
