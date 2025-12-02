@@ -1,5 +1,5 @@
 (ns ui.pages.spores
-  (:require [ui.api :as api]
+  (:require [ui.api-client :as api-client]
             [cljs.core.async :refer [<!]]
             [reagent.core :as r]
             [ui.components.table :as table]
@@ -11,7 +11,7 @@
 
 (defn spores-list []
   (let [spores (r/atom [])]
-    (go (reset! spores (<! (api/list-spores))))
+    (go (reset! spores (<! (api-client/list-spores))))
     (fn []
       (println @spores)
       [:div
@@ -25,9 +25,9 @@
         spore-id (get-in routing-data [:route-params :spore-id])
         spore (r/atom {})
         sensor-data (r/atom [])]
-    (go (do (reset! spore (<! (api/get-spore spore-id)))
+    (go (do (reset! spore (<! (api-client/get-spore spore-id)))
             (doall (map (fn [sensor]
-                          (go (swap! sensor-data conj {:id (:id sensor) :name (:name sensor) :readings (:readings (<! (api/get-dht-data (:id sensor))))})))
+                          (go (swap! sensor-data conj {:id (:id sensor) :name (:name sensor) :readings (:readings (<! (api-client/get-dht-data (:id sensor))))})))
                         (:dht_sensors @spore)))))
     (fn []
       (println @sensor-data)

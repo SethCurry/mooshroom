@@ -15,6 +15,9 @@ includes:
   local:
     taskfile: deploy/local
     dir: deploy/local
+  backend:
+    taskfile: ./src/mooshroom
+    dir: ./src/mooshroom
   web:
-    taskfile: ./ui
-    dir: ./ui
+    taskfile: ./src/ui
+    dir: ./src/ui

@@ -1,0 +1,18 @@
+{
+  "mqtt": {
+    "brokers": ["mqtt://localhost:11883"],
+    "username": "mooshroom",
+    "password": "mooshroom",
+    "prefix": "mooshroom"
+  },
+  "sql": {
+    "host": "localhost",
+    "username": "postgres",
+    "password": "postgres",
+    "database": "postgres",
+    "port": 16543
+  },
+  "http": {
+    "port": 18080
+  }
+}

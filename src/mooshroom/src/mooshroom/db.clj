@@ -2,26 +2,25 @@
   (:require [hikari-cp.core :refer [make-datasource]]
             [next.jdbc :as jdbc]
             [honey.sql :as sql]
-            [taoensso.telemere :as t]))
+            [taoensso.telemere :as t]
+            [api.responses :refer [->Spore]]))
 
-(def datasource-options {
-                         :auto-commit true
+(def datasource-options {:auto-commit true
                          :read-only false
                          :connection-timeout 30000
                          :validation-timeout 5000
                          :idle-timeout 60000
-                         :max-lifetime :1000000
+                         :max-lifetime 1000000
                          :minimum-idle 1
                          :maximum-pool-size 10
                          :pool-name "mooshroom-pool"
                          :adapter "postgresql"
                          :register-mbeans false
-                         :username "mooshroom"
-                         :password "mooshroom"
-                         :database-name "mooshroom"
+                         :username "postgres"
+                         :password "postgres"
+                         :database-name "postgres"
                          :server-name "localhost"
-                         :server-port 5432
-})
+                         :port-number 16543})
 
 (defonce datasource (delay (make-datasource datasource-options)))
 
@@ -37,3 +36,12 @@
                          :or {unmarshaller nil}}]
   (let [formatted-query (sql/format query)]
     (raw-query formatted-query :unmarshaller unmarshaller)))
+
+(defn list-spores []
+  (let [results
+        (doall (do-query {:select [:id :name] :from :spores}
+                         :unmarshaller (fn [row] (->Spore (:spores/id row) (:spores/name row)))))
+        filled-result (if (empty? results)
+                        []
+                        results)]
+    filled-result))
