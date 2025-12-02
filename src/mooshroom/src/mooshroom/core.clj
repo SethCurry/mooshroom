@@ -22,9 +22,18 @@
      :headers {"Content-Type" "application/json"}
      :body data}))
 
+(defn get-spore [request]
+  (let [spore-id (get-in request [:path-params :spore-id])
+        spore (db/get-spore spore-id)
+        data (generate-string spore)]
+    {:status 200
+     :headers {"Content-Type" "application/json"}
+     :body data}))
+
 (def app
   (reitit-ring/ring-handler
-   (reitit-ring/router [["/api/v1/spores" {:get {:handler list-spores}}]])
+   (reitit-ring/router [["/api/v1/spores" ["" {:get {:handler list-spores}}
+                                           "/:spore-id" {:get {:handler get-spore}}]]])
    (reitit-ring/routes
     (reitit-ring/create-resource-handler {:path "/" :root "/public"})
     (reitit-ring/create-default-handler))))
