@@ -1,7 +1,8 @@
 (ns mooshroom.mqtt
   (:require [clojurewerkz.machine-head.client :as mh]
             [cheshire.core :refer [parse-string]]
-            [taoensso.telemere :as t]))
+            [taoensso.telemere :as t]
+            [mooshroom.configuration :refer [config]]))
 
 
 (defn create-mqtt-handler [callback]
@@ -11,7 +12,7 @@
       (callback topic parsed))))
 
 (defn start-mqtt-client []
-  (let [conn (mh/connect "tcp://localhost:11883" {:opts {:username "mooshroom" :password "mooshroom"}})]
+  (let [conn (mh/connect (:broker (:mqtt config)) {:opts {:username (:username (:mqtt config)) :password (:password (:mqtt config))}})]
     (mh/subscribe conn {"hello" 0} (create-mqtt-handler (fn [topic payload]
                                                           (println payload)
                                                           (t/log! {:level :debug :msg "saw MQTT message" :data {:topic topic :payload payload}}))))

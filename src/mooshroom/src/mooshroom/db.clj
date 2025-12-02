@@ -3,7 +3,8 @@
             [next.jdbc :as jdbc]
             [honey.sql :as sql]
             [taoensso.telemere :as t]
-            [api.responses :refer [->Spore]]))
+            [api.responses :refer [->Spore]]
+            [mooshroom.configuration :refer [config]]))
 
 (def datasource-options {:auto-commit true
                          :read-only false
@@ -16,11 +17,11 @@
                          :pool-name "mooshroom-pool"
                          :adapter "postgresql"
                          :register-mbeans false
-                         :username "postgres"
-                         :password "postgres"
-                         :database-name "postgres"
-                         :server-name "localhost"
-                         :port-number 16543})
+                         :username (:username (:sql config))
+                         :password (:password (:sql config))
+                         :database-name (:database (:sql config))
+                         :server-name (:host (:sql config))
+                         :port-number (:port (:sql config))})
 
 (defonce datasource (delay (make-datasource datasource-options)))
 

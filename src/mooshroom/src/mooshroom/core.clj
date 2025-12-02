@@ -5,7 +5,8 @@
             [mooshroom.mqtt :as mqtt]
             [reitit.ring :as reitit-ring]
             [mooshroom.db :as db]
-            [taoensso.telemere :as t])
+            [taoensso.telemere :as t]
+            [mooshroom.configuration :refer [config]])
   (:gen-class))
 
 (defn handler [request]
@@ -32,5 +33,5 @@
   [& args]
   (t/set-min-level! :debug)
   (mqtt/start-mqtt-client)
-  (run-jetty app {:port 3000})
+  (run-jetty app {:port (:port (:http config))})
   (println "Hello, World!"))
