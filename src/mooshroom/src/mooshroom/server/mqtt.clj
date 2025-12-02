@@ -3,7 +3,8 @@
             [cheshire.core :refer [parse-string]]
             [taoensso.telemere :as t]
             [mooshroom.configuration :refer [config]]
-            [clojure.string]))
+            [clojure.string]
+            [mooshroom.db :as db]))
 
 (defn handle-dht-data [topic payload]
   (let [split-topic (clojure.string/split topic #"/")
