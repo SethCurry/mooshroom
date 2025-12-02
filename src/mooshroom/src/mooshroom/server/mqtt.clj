@@ -14,7 +14,7 @@
         ts (:time payload)
         humidity (:humidity payload)
         temperature (:temperature payload)]
-    (t/log! {:level :debug :msg "Received DHT data" :data {:topic topic :payload payload}})))
+    (t/log! {:level :debug :msg "Received DHT data" :data {:topic topic :spore-name spore-name :dht-pin dht-pin :ts ts :humidity humidity :temperature temperature}})))
 
 
 (defn create-mqtt-handler [callback]
