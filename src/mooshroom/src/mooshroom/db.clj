@@ -3,7 +3,7 @@
             [next.jdbc :as jdbc]
             [honey.sql :as sql]
             [taoensso.telemere :as t]
-            [api.responses :refer [->Spore]]
+            [api.responses :refer [->Spore ->DHTSensor ->DHTSensorData]]
             [mooshroom.configuration :refer [config]]))
 
 (def datasource-options {:auto-commit true
@@ -62,4 +62,14 @@
 (defn get-spore-by-id [id]
   (let [result (first (do-query {:select [:id :name] :from :spores :where [:= :id id]}
                                 :unmarshaller (fn [row] (->Spore (:spores/id row) (:spores/name row)))))]
+    result))
+
+(defn get-dht-sensors-by-spore-id [spore-id]
+  (let [result (do-query {:select [:id :name :gpio_pin] :from :dht_sensors :where [:= :spore_id spore-id]}
+                         :unmarshaller (fn [row] (->DHTSensor (:dht_sensors/id row) (:dht_sensors/name row) (:dht_sensors/gpio_pin row))))]
+    result))
+
+(defn get-dht-sensor-data-by-id [id]
+  (let [result (do-query {:select [:time :temperature :humidity] :from :dht_data :where [:= :sensor_id id]}
+                         :unmarshaller (fn [row] (->DHTSensorData (:dht_data/time row) (:dht_data/temperature row) (:dht_data/humidity row))))]
     result))
