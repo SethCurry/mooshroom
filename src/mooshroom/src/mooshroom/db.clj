@@ -46,3 +46,15 @@
                         []
                         results)]
     filled-result))
+
+(defn create-spore [name]
+  (let [result (:id (first (do-query {:insert-into :spores
+                                      :columns [:name]
+                                      :values [name]
+                                      :returning :id})))]
+    result))
+
+(defn get-spore-by-name [name]
+  (let [result (first (do-query {:select [:id :name] :from :spores :where [:name name]}
+                                :unmarshaller (fn [row] (->Spore (:spores/id row) (:spores/name row)))))]
+    result))
