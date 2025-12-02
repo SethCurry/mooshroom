@@ -1,4 +1,4 @@
-(ns mooshroom.mqtt
+(ns mooshroom.server.mqtt
   (:require [clojurewerkz.machine-head.client :as mh]
             [cheshire.core :refer [parse-string]]
             [taoensso.telemere :as t]
