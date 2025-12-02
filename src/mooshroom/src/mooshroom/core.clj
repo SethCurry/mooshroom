@@ -10,11 +10,6 @@
             [clojurewerkz.machine-head.client :as mh])
   (:gen-class))
 
-(defn handler [request]
-  {:status 200
-   :headers {"Content-Type" "application/json"}
-   :body (generate-string (->Spore 1 "Test"))})
-
 (defn list-spores [request]
   (let [spores (db/list-spores)
         data (generate-string spores)]
