@@ -11,9 +11,12 @@
           parsed (parse-string payload-string true)]
       (callback topic parsed))))
 
-(defn start-mqtt-client []
+(defn start-mqtt-client
+  "Creates an MQTT client and subscribes to the given topics.
+   
+   Handlers are formatted as [topic qos handler]"
+  [handlers]
   (let [conn (mh/connect (:broker (:mqtt config)) {:opts {:username (:username (:mqtt config)) :password (:password (:mqtt config))}})]
-    (mh/subscribe conn {"hello" 0} (create-mqtt-handler (fn [topic payload]
-                                                          (println payload)
-                                                          (t/log! {:level :debug :msg "saw MQTT message" :data {:topic topic :payload payload}}))))
-    (mh/publish conn "hello" "[1, 2, 3, 4]")))
+    (doseq [[topic qos handler] handlers]
+      (mh/subscribe conn {topic qos} (create-mqtt-handler handler)))
+    conn))

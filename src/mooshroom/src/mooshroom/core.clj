@@ -6,7 +6,8 @@
             [reitit.ring :as reitit-ring]
             [mooshroom.db :as db]
             [taoensso.telemere :as t]
-            [mooshroom.configuration :refer [config]])
+            [mooshroom.configuration :refer [config]]
+            [clojurewerkz.machine-head.client :as mh])
   (:gen-class))
 
 (defn handler [request]
@@ -32,6 +33,9 @@
   "I don't do a whole lot ... yet."
   [& args]
   (t/set-min-level! :debug)
-  (mqtt/start-mqtt-client)
+  (let [conn (mqtt/start-mqtt-client [[(str (:prefix (:mqtt config)) "/spores/+/dht_data") 0 (fn [topic payload]
+                                                                                               (println payload)
+                                                                                               (t/log! {:level :debug :msg "saw MQTT message" :data {:topic topic :payload payload}}))]])]
+    (mh/publish conn "mooshroom/spores/test/dht_data" "[1, 2, 3, 4]"))
   (run-jetty app {:port (:port (:http config))})
   (println "Hello, World!"))
