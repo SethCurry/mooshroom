@@ -58,3 +58,8 @@
   (let [result (first (do-query {:select [:id :name] :from :spores :where [:name name]}
                                 :unmarshaller (fn [row] (->Spore (:spores/id row) (:spores/name row)))))]
     result))
+
+(defn get-spore-by-id [id]
+  (let [result (first (do-query {:select [:id :name] :from :spores :where [:id id]}
+                                :unmarshaller (fn [row] (->Spore (:spores/id row) (:spores/name row)))))]
+    result))

@@ -13,6 +13,7 @@
                  [com.github.seancorfield/honeysql "2.7.1350"]
                  [metosin/reitit "0.9.2"]
                  [org.eclipse.paho/org.eclipse.paho.client.mqttv3 "1.2.5"]
+                 [org.clojure/tools.cli "1.2.245"]
                  [clojurewerkz/machine_head "1.0.0"]]
   :source-paths ["src" "../shared"]
   :main ^:skip-aot mooshroom.core
