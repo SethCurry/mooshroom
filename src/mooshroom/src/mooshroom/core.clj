@@ -2,7 +2,8 @@
   (:require
    [clojure.tools.cli :refer [parse-opts]]
    [taoensso.telemere :as t]
-   [mooshroom.server.core :as server])
+   [mooshroom.server.core :as server]
+   [mooshroom.server.mqtt :as mqtt])
   (:gen-class))
 
 
@@ -12,7 +13,9 @@
                       :validate [#(contains? #{:debug :info :warn :error :fatal} %) "Must be a valid log level"]]])
 
 (def commands {:server {:options []
-                        :fn server/start-server}})
+                        :fn server/start-server}
+               :fake-spore {:options []
+                            :fn (fn [_ _] (mqtt/fake-spore (mqtt/connect)))}})
 
 (defn -main
   "I don't do a whole lot ... yet."

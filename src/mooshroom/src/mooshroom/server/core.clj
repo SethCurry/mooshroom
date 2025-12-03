@@ -9,9 +9,9 @@
 
 (defn start-server
   [_ _]
-  (let [conn (mqtt/start-mqtt-client [[(str (:prefix (:mqtt config)) "/spores/+/dht_data")
+  (let [prefix (:prefix (:mqtt config))
+        conn (mqtt/start-mqtt-client [[(str prefix "/spores/+/dht_data")
                                        0
                                        mqtt/handle-dht-data]])]
-    (t/log! {:level :info :msg "Connected to MQTT"})
-    (mh/publish conn "mooshroom/spores/test/dht_data" "[1, 2, 3, 4]"))
+    (t/log! {:level :info :msg "Connected to MQTT" :data {:prefix prefix}}))
   (run-jetty api/app {:port (:port (:http config))}))
