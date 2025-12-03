@@ -15,6 +15,6 @@
                      styles/gap-sm)}
    [:img {:src "/img/logo.png" :style {:height "100%" :width "auto" :margin-left "0.5vw"}}]
    (div/vertically-centered [:span {:style (->> {:font-size "2rem"}
-                                                styles/font-splash)} "Mooshroom"])
+                                                styles/font-splash)} [:a {:href "/" :style (->> {} styles/a-hidden)} "Mooshroom"]])
    (map #(navbar-link (first %) (second %))
         links)])
