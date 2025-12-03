@@ -2,12 +2,12 @@
 -- +goose StatementBegin
 CREATE TABLE spores (
   id SERIAL PRIMARY KEY,
-  name VARCHAR(255)
+  name VARCHAR(255) UNIQUE NOT NULL
 );
 
 CREATE TABLE dht_sensors (
   id SERIAL PRIMARY KEY,
-  name VARCHAR(255),
+  name VARCHAR(255) NOT NULL,
   gpio_pin INTEGER NOT NULL,
   spore_id INTEGER REFERENCES spores(id)
 );
