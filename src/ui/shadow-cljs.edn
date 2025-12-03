@@ -5,12 +5,15 @@
                 [reagent-utils "0.3.4"]
                 [metosin/reitit "0.5.18"]
                 [cljs-http "0.1.49"]
+                [com.taoensso/telemere "1.1.0"]
                 [venantius/accountant "0.2.5"
                  :exclusions [org.clojure/tools.reader]]]
  :builds       {:app {:target     :browser
                       :output-dir "public/js"
                       :asset-path "/js"
-                      :modules    {:app {:entries [ui.core]}}
+                      ;:modules    {:app {:entries [ui.core]}}
+                      :modules {:app {:init-fn ui.core/init!
+                                      :entries [ui.core]}}
                       :devtools   {:after-load ui.core/mount-root}}}
 
  :dev-http     {3000 {:root "public"}}}

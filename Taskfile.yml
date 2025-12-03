@@ -6,10 +6,12 @@ vars:
   GREETING: Hello, World!
 
 tasks:
-  default:
+  build-ui:
+    dir: ./src/ui
     cmds:
-      - echo "{{.GREETING}}"
-    silent: true
+      - npx shadow-cljs release app
+      - rm -rf ../mooshroom/resources/public
+      - cp -r public ../mooshroom/resources/public
 
 includes:
   local:

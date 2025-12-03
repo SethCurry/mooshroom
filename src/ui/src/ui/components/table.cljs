@@ -3,6 +3,7 @@
    [ui.components.styles :as styles]))
 
 (defn table [columns rows]
+  (println "Table data: " rows)
   [:table {:style {:background-color styles/color-dark-brown}}
    [:thead
     [:tr {:style {:background-color styles/color-dark-brown :color styles/color-off-white}}

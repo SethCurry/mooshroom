@@ -1,6 +1,7 @@
 (ns ui.core
   (:require
    [reagent.core :as reagent :refer [atom]]
+   [taoensso.telemere :as t]
    [reagent.dom :as rdom]
    [clojure.string :as string]
    [accountant.core :as accountant]
@@ -73,6 +74,7 @@
   (rdom/render [current-page] (.getElementById js/document "app")))
 
 (defn init! []
+  (t/set-min-level! :debug)
   (accountant/configure-navigation!
    {:nav-handler
     (fn [path]

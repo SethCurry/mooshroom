@@ -6,6 +6,7 @@
             [ui.components.chart :as chart]
             [reagent.session :as session]
             [ui.components.styles :as styles]
+            [taoensso.telemere :as t]
             [ui.components.div :as div])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
@@ -13,12 +14,12 @@
   (let [spores (r/atom [])]
     (go (reset! spores (<! (api-client/list-spores))))
     (fn []
-      (println @spores)
+      (println "Spore list " @spores)
       [:div
        [:h1 "Spores"]
-       (table/table ["ID" "Name"] (map (fn [spore]
+       [table/table ["ID" "Name"] (map (fn [spore]
                                          [(:id spore) [:a {:href (str "/spores/" (:id spore))} (:name spore)]])
-                                       (:spores @spores)))])))
+                                       @spores)]])))
 
 (defn spore-detail []
   (let [routing-data (session/get :route)
@@ -27,17 +28,18 @@
         sensor-data (r/atom [])]
     (go (do (reset! spore (<! (api-client/get-spore spore-id)))
             (doall (map (fn [sensor]
-                          (go (swap! sensor-data conj {:id (:id sensor) :name (:name sensor) :readings (:readings (<! (api-client/get-dht-data (:id sensor))))})))
-                        (:dht_sensors @spore)))))
+                          (go (swap! sensor-data conj {:id (:id sensor) :name (:name sensor) :readings (<! (api-client/get-dht-data (:id sensor)))})))
+                        (:dht-sensors @spore)))))
     (fn []
-      (println @sensor-data)
+      (t/log! {:level :debug :msg "Sensor data" :data {:sensor-data @sensor-data}})
       [:div
        [:h1 (str "Spore: " (:name @spore))]
        (when (not (empty? @sensor-data))
          [div/container
-          [:h2 {:style {:text-align "center"}} "DHT Sensors"]
-          (doall (map (fn [sensor] [:div {:style {:height "30vh" :width "25%" :display "flex" :flex-direction "column" :align-items "center" :justify-content "center"}}
-                                    [:h3 (:name sensor)]
-                                    [:div {:style {:height "25vh" :width "100%"}}
-                                     [chart/climate-chart-component (:id sensor) (:readings sensor)]]])
+          [:h2 {:key "dht-sensors-header" :style {:text-align "center"}} "DHT Sensors"]
+          (doall (map (fn [sensor]
+                        [:div {:key (:id sensor) :style {:height "30vh" :width "25%" :display "flex" :flex-direction "column" :align-items "center" :justify-content "center"}}
+                         [:h3 (:name sensor)]
+                         [:div {:style {:height "25vh" :width "100%"}}
+                          [chart/climate-chart-component (:id sensor) (:readings sensor)]]])
                       @sensor-data))])])))

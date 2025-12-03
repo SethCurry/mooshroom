@@ -13,5 +13,5 @@ tasks:
   build:
     cmds:
       - npx shadow-cljs release app
-      - rm -rf ../internal/ui/public
-      - cp -r public ../internal/ui
+      - rm -rf ../mooshroom/resources/public
+      - cp -r public ../mooshroom/resources/public
