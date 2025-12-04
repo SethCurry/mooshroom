@@ -25,20 +25,32 @@
 
 (defonce datasource (delay (make-datasource datasource-options)))
 
-(defn raw-query [query & {:keys [unmarshaller]
-                          :or {unmarshaller nil}}]
+(defn raw-query
+  "Executes a query as a string and returns the result as a sequence of maps.
+   
+   If :unmarshaller is provided, it will be applied to each row
+   before returning the result."
+  [query & {:keys [unmarshaller]
+            :or {unmarshaller nil}}]
   (t/log! {:level :debug :msg "executing query" :data {:query (first query) :params (rest query)}})
   (let [rows (jdbc/execute! @datasource query)]
     (if (not (nil? unmarshaller))
       (map unmarshaller rows)
       rows)))
 
-(defn do-query [query & {:keys [unmarshaller]
-                         :or {unmarshaller nil}}]
+(defn do-query
+  "Applies HoneySQL formatting to a query and executes it.
+   
+   If :unmarshaller is provided, it will be applied to each row
+   before returning the result."
+  [query & {:keys [unmarshaller]
+            :or {unmarshaller nil}}]
   (let [formatted-query (sql/format query)]
     (raw-query formatted-query :unmarshaller unmarshaller)))
 
-(defn list-spores []
+(defn list-spores
+  "Lists all spores from the database."
+  []
   (let [results
         (doall (do-query {:select [:id :name] :from :spores}
                          :unmarshaller (fn [row] (->Spore (:spores/id row) (:spores/name row)))))
@@ -47,7 +59,10 @@
                         results)]
     filled-result))
 
-(defn create-spore [name]
+(defn create-spore
+  "Creates a new spore in the database.
+   Returns the ID of the created spore."
+  [name]
   (let [result (:id (first (do-query {:insert-into :spores
                                       :columns [:name]
                                       :values [[name]]
@@ -59,7 +74,10 @@
                                 :unmarshaller (fn [row] (->Spore (:spores/id row) (:spores/name row)))))]
     result))
 
-(defn get-or-create-spore-by-name [name]
+(defn get-or-create-spore-by-name
+  "Gets a spore by name or creates a new spore if it doesn't exist.
+   Returns the spore."
+  [name]
   (let [result (get-spore-by-name name)]
     (if (nil? result)
       (do (t/log! {:level :debug :msg "Creating spore" :data {:name name}})
@@ -67,7 +85,10 @@
       (do (t/log! {:level :debug :msg "Got spore" :data {:id (:id result)}})
           result))))
 
-(defn get-spore-by-id [id]
+(defn get-spore-by-id
+  "Gets a spore by ID.
+   Returns the spore."
+  [id]
   (let [result (first (do-query {:select [:id :name] :from :spores :where [:= :id id]}
                                 :unmarshaller (fn [row] (->Spore (:spores/id row) (:spores/name row)))))]
     result))
