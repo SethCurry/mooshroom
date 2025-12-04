@@ -2,7 +2,8 @@
   (:require [mooshroom.db :as db]
             [cheshire.core :refer [generate-string]]
             [reitit.ring :as reitit-ring]
-            [api.responses :refer [->SporeWithDHTSensors]]))
+            [api.responses :refer [->SporeWithDHTSensors]]
+            [mooshroom.server.api.enclosure-api :refer [view-enclosures new-enclosure]]))
 
 
 (defn list-spores [request]
@@ -15,7 +16,6 @@
 (defn get-spore [request]
   (let [spore-id (Integer/parseInt (get-in request [:path-params :spore-id]))
         spore (db/get-spore-by-id spore-id)
-        data (generate-string spore)
         dht-sensors (db/get-dht-sensors-by-spore-id spore-id)]
     {:status 200
      :headers {"Content-Type" "application/json"}
@@ -35,7 +35,10 @@
                         ["/spores"
                          ["" {:get {:handler list-spores}}]
                          ["/:spore-id" {:get {:handler get-spore}}]]
-                        ["/dht_sensors/:dht_sensor_id/data" {:get {:handler get-dht-sensor-data}}]])
+                        ["/dht_sensors/:dht_sensor_id/data" {:get {:handler get-dht-sensor-data}}]
+                        ["/enclosures"
+                         ["" {:get {:handler view-enclosures}
+                              :post {:handler new-enclosure}}]]])
    (reitit-ring/routes
     (reitit-ring/create-resource-handler {:path "/" :root "/public"})
     (reitit-ring/create-default-handler))))
