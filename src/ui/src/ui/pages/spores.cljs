@@ -5,7 +5,6 @@
             [ui.components.table :as table]
             [ui.components.chart :as chart]
             [reagent.session :as session]
-            [ui.components.styles :as styles]
             [taoensso.telemere :as t]
             [ui.components.div :as div])
   (:require-macros [cljs.core.async.macros :refer [go]]))

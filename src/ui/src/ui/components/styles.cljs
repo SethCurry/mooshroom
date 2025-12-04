@@ -1,5 +1,4 @@
 (ns ui.components.styles
-  (:require [ui.components.colors :as colors])
   (:require-macros [ui.macros :as macros]))
 
 
