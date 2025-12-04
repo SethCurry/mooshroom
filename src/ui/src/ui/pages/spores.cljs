@@ -13,7 +13,6 @@
   (let [spores (r/atom [])]
     (go (reset! spores (<! (api-client/list-spores))))
     (fn []
-      (println "Spore list " @spores)
       [:div
        [:h1 "Spores"]
        [table/table ["ID" "Name"] (map (fn [spore]
