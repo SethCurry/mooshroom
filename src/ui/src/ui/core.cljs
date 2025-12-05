@@ -8,7 +8,8 @@
    [reitit.frontend :as reitit]
    [reagent.session :as session]
    [ui.layouts :as layouts]
-   [ui.pages.spores :as spores]))
+   [ui.pages.spores :as spores]
+   [ui.pages.enclosures :as enclosures]))
 
 ;; -------------------------
 ;; Views
@@ -31,7 +32,10 @@
    [["/" :index]
     ["/spores"
      ["" :spores]
-     ["/:spore-id" :spore-detail]]]))
+     ["/:spore-id" :spore-detail]]
+    ["/enclosures"
+     ["" :enclosures]
+     ["/:enclosure-id" :enclosure-detail]]]))
 
 (defn path-for [route & [params]]
   (if params
@@ -55,7 +59,8 @@
   (case route
     :index #'home-page
     :spores #(spores/spores-list)
-    :spore-detail #(spores/spore-detail)))
+    :spore-detail #(spores/spore-detail)
+    :enclosures #(enclosures/enclosures-list)))
 
 
 ;; -------------------------

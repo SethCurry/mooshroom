@@ -14,3 +14,11 @@
 (defn get-dht-data [id]
   (go (let [response (<! (http/get (str "/api/v1/dht_sensors/" id "/data")))]
         (:body response))))
+
+(defn list-enclosures []
+  (go (let [response (<! (http/get "/api/v1/enclosures"))]
+        (:body response))))
+
+(defn create-enclosure [name]
+  (go (let [response (<! (http/post "/api/v1/enclosures" {:json-params {:name name}}))]
+        (:body response))))

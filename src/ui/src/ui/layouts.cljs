@@ -5,5 +5,6 @@
 (defn base [& children]
   [:div {:style (->> {:width "100%" :height "100%"}
                      styles/light-brown-bg)}
-   [navbar/navbar [["Spores" "/spores"]]]
+   [navbar/navbar [["Spores" "/spores"]
+                   ["Enclosures" "/enclosures"]]]
    [:div {:style {:padding "1rem"}} children]])
