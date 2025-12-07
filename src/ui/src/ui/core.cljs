@@ -35,7 +35,8 @@
      ["/:spore-id" :spore-detail]]
     ["/enclosures"
      ["" :enclosures]
-     ["/:enclosure-id" :enclosure-detail]]]))
+     ["/new" :new-enclosure]
+     ["/view/:enclosure-id" :enclosure-detail]]]))
 
 (defn path-for [route & [params]]
   (if params
@@ -60,7 +61,8 @@
     :index #'home-page
     :spores #(spores/spores-list)
     :spore-detail #(spores/spore-detail)
-    :enclosures #(enclosures/enclosures-list)))
+    :enclosures #(enclosures/enclosures-list)
+    :new-enclosure #(enclosures/new-enclosure)))
 
 
 ;; -------------------------
