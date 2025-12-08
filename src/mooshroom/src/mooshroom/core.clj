@@ -27,7 +27,13 @@
         cmd-options (:options cmd-def)
         parsed-opts (parse-opts args (concat global-options cmd-options))
         opts (:options parsed-opts)
+        opt-errors (:errors parsed-opts)
         rest-args (:arguments parsed-opts)]
+    (when (not (empty? opt-errors))
+      (println "Invalid CLI arguments:")
+      (doseq [error opt-errors]
+        (println "  " error))
+      (System/exit 1))
     (when (nil? cmd-def)
       (println "Unknown command: " cmd-name)
       (System/exit 1))

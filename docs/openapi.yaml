@@ -1,0 +1,159 @@
+openapi: 3.1.0
+info:
+  title: Mooshroom API
+  description: |-
+    This is the API for the Mooshroom project.
+
+  termsOfService: https://github.com/SethCurry/mooshroom
+  contact:
+    email: noreply@nunya.biz
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.12
+externalDocs:
+  description: Find out more about Mooshroom
+  url: https://github.com/SethCurry/mooshroom
+servers:
+  - url: https://mooshroom.nunya.biz/
+tags:
+  - name: spore
+    description: Everything about your Spores
+    externalDocs:
+      description: Find out more
+      url: https://github.com/SethCurry/mooshroom
+  - name: enclosure
+    description: Access to Enclosures
+    externalDocs:
+      description: Find out more about our Enclosures
+      url: https://github.com/SethCurry/mooshroom
+paths:
+  /api/v1/spores:
+    get:
+      tags:
+        - spore
+      summary: Get all Spores
+      description: Get all Spores
+      operationId: getSpores
+      parameters:
+        - name: enclosureId
+          in: query
+          description: Enclosure ID
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Spore"
+    put:
+      tags:
+        - spore
+      summary: Update an existing Spore
+      description: Update an existing Spore by Id.
+      operationId: updateSpore
+      requestBody:
+        description: Update an existent Spore
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Spore"
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Spore"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Spore not found
+        "422":
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - api_key: []
+  /api/v1/spores/{sporeId}:
+    get:
+      tags:
+        - spore
+      summary: Get a Spore by ID
+      description: Get a Spore by ID
+      operationId: getSporeById
+      parameters:
+        - name: sporeId
+          in: path
+          description: Spore ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Spore"
+        "404":
+          description: Spore not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - api_key: []
+components:
+  schemas:
+    Spore:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          examples: [10]
+        name:
+          type: string
+          examples: ["Spore 1"]
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+  requestBodies:
+    Spore:
+      description: Spore object that needs to be added to the Mooshroom
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Spore"
+    SporeArray:
+      description: List of Spore objects
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/Spore"
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header

@@ -4,6 +4,7 @@
             [taoensso.telemere :as t]
             [mooshroom.configuration :refer [config]]
             [clojure.string]
+            [mooshroom.models.spores :as spores]
             [mooshroom.db :as db]))
 
 (defn handle-dht-data [topic payload]
@@ -16,14 +17,13 @@
         temperature (:temperature payload)
         ts (java.sql.Timestamp/from (java.time.Instant/now))]
     (t/log! {:level :debug :msg "Getting or creating spore" :data {:spore-name spore-name}})
-    (let [spore (db/get-or-create-spore-by-name spore-name)]
+    (let [spore (spores/get-or-create-spore-by-name spore-name)]
       (t/log! {:level :debug :msg "Got or created spore" :data {:spore-id (:id spore)}})
       (let [dht-sensor (db/get-or-create-dht-sensor-by-spore-id-and-pin (:id spore) dht-pin)]
         (t/log! {:level :debug :msg "Got or created DHT sensor" :data {:dht-sensor-id (:id dht-sensor)}})
         (t/log! {:level :debug :msg "Creating DHT sensor data" :data {:topic topic :spore-name spore-name :dht-pin dht-pin :humidity humidity :temperature temperature}})
         (db/create-dht-sensor-data (:id dht-sensor) ts humidity temperature)
         (t/log! {:level :info :msg "Created DHT sensor data" :data {:dht-sensor-id (:id dht-sensor) :humidity humidity :temperature temperature}})))))
-
 
 (defn create-mqtt-handler [callback]
   (fn [^String topic _ ^bytes payload]
