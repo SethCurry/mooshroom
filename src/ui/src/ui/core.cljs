@@ -62,7 +62,8 @@
     :spores #(spores/spores-list)
     :spore-detail #(spores/spore-detail)
     :enclosures #(enclosures/enclosures-list)
-    :new-enclosure #(enclosures/new-enclosure)))
+    :new-enclosure #(enclosures/new-enclosure)
+    :enclosure-detail #(enclosures/enclosure-detail)))
 
 
 ;; -------------------------

@@ -1,8 +1,8 @@
 (ns mooshroom.server.api.enclosure-api
-(:require [mooshroom.server.api.util :refer [make-response]]
-          [ring.util.request :refer [body-string]]
-          [cheshire.core :refer [parse-string]]
-          [mooshroom.models.enclosures :refer [list-enclosures create-enclosure]]))
+  (:require [mooshroom.server.api.util :refer [make-response]]
+            [ring.util.request :refer [body-string]]
+            [cheshire.core :refer [parse-string]]
+            [mooshroom.models.enclosures :refer [list-enclosures create-enclosure get-enclosure-by-id]]))
 
 (defn view-enclosures [request]
   (let [enclosures (list-enclosures)]
@@ -12,3 +12,8 @@
   (let [name (:name (parse-string (body-string request) true))]
     (create-enclosure name)
     (make-response 200 {:message "Enclosure created"})))
+
+(defn get-enclosure [request]
+  (let [enclosure-id (Integer/parseInt (get-in request [:path-params :enclosure-id]))
+        enclosure (get-enclosure-by-id enclosure-id)]
+    (make-response 200 enclosure)))

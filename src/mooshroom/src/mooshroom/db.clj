@@ -23,7 +23,9 @@
                          :server-name (:host (:sql config))
                          :port-number (:port (:sql config))})
 
-(defonce datasource (delay (make-datasource datasource-options)))
+(defonce datasource (delay (try (make-datasource datasource-options)
+                                (catch Exception e (t/log! {:level :error :msg "Error creating datasource" :data {:error e}})
+                                       (throw e)))))
 
 (defn raw-query
   "Executes a query as a string and returns the result as a sequence of maps.

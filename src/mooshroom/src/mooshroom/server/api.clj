@@ -3,7 +3,7 @@
             [cheshire.core :refer [generate-string]]
             [reitit.ring :as reitit-ring]
             [api.responses :refer [->SporeWithDHTSensors]]
-            [mooshroom.server.api.enclosure-api :refer [view-enclosures new-enclosure]]))
+            [mooshroom.server.api.enclosure-api :refer [view-enclosures new-enclosure get-enclosure]]))
 
 
 (defn list-spores [request]
@@ -38,7 +38,8 @@
                         ["/dht_sensors/:dht_sensor_id/data" {:get {:handler get-dht-sensor-data}}]
                         ["/enclosures"
                          ["" {:get {:handler view-enclosures}
-                              :post {:handler new-enclosure}}]]])
+                              :post {:handler new-enclosure}}]
+                         ["/:enclosure-id" {:get {:handler get-enclosure}}]]])
    (reitit-ring/routes
     (reitit-ring/create-resource-handler {:path "/" :root "/public"})
     (reitit-ring/create-default-handler))))

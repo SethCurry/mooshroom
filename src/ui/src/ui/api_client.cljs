@@ -21,4 +21,8 @@
 
 (defn create-enclosure [name]
   (go (let [response (<! (http/post "/api/v1/enclosures" {:json-params {:name name}}))]
-        (:body response))))
+        response)))
+
+(defn get-enclosure [id]
+  (go (let [response (<! (http/get (str "/api/v1/enclosures/" id)))]
+        response)))

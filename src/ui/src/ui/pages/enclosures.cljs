@@ -1,11 +1,14 @@
 (ns ui.pages.enclosures
   (:require-macros [cljs.core.async.macros :refer [go]])
-  
+
   (:require [ui.api-client :as api-client]
             [cljs.core.async :refer [<!]]
             [reagent.core :as r]
             [ui.components.table :as table]
-            [ui.components.styles :as styles]))
+            [ui.components.styles :as styles]
+            [ui.brower :as brower]
+            [taoensso.telemere :as t]
+            [reagent.session :as session]))
 
 
 (defn enclosures-list []
@@ -19,10 +22,26 @@
                                          [(:id enclosure) [:a {:href (str "/enclosures/view/" (:id enclosure))} (:name enclosure)]])
                                        @enclosures)]])))
 
+(defn- on-create-enclosure-submit [name]
+  (go (let [response (<! (api-client/create-enclosure name))]
+        (if (= (:status response) 200)
+          (brower/redirect "/enclosures")
+          (t/log! {:level :error :msg "Failed to create enclosure" :data {:response response}})))))
+
 (defn new-enclosure []
   (let [name (r/atom "")]
     (fn []
       [:div {:style (->> {:gap "1rem"} styles/flex-col)}
        [:h1 "New Enclosure"]
        [:input {:type "text" :value @name :on-change #(reset! name (-> % .-target .-value))}]
-       [:button {:on-click #(api-client/create-enclosure @name)} "Create"]])))
+       [:button {:on-click #(on-create-enclosure-submit @name)} "Create"]])))
+
+
+(defn enclosure-detail []
+  (let [routing-data (session/get :route)
+        enclosure-id (get-in routing-data [:route-params :enclosure-id])
+        enclosure (r/atom {})]
+    (go (reset! enclosure (:body (<! (api-client/get-enclosure enclosure-id)))))
+    (fn []
+      [:div
+       [:h1 (str "Enclosure: " (:name @enclosure))]])))
