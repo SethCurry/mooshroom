@@ -3,7 +3,8 @@
             [cheshire.core :refer [generate-string]]
             [reitit.ring :as reitit-ring]
             [reitit.ring.middleware.parameters :refer [parameters-middleware]]
-            [reitit.ring.middleware.exception :as exception]
+            [reitit.ring.middleware.exception :as reitit-exception]
+            [mooshroom.exceptions :as exceptions]
             [taoensso.telemere :as t]
             [mooshroom.server.api.enclosure-api :refer [view-enclosures new-enclosure get-enclosure]]
             [mooshroom.server.api.spore-api :refer [list-spores get-spore]]))
@@ -17,24 +18,17 @@
      :headers {"Content-Type" "application/json"}
      :body data}))
 
-(derive ::not-found ::exception)
-
-(defn throw-not-found-exc [name]
-  (throw (ex-info (str "Resource not found: " name) {:type ::not-found})))
-
 (def exception-middleware
-  (exception/create-exception-middleware
+  (reitit-exception/create-exception-middleware
    (merge
-    exception/default-handlers
+    reitit-exception/default-handlers
     {
-     ::error (fn [message exception request]
-               (t/log! {:level :error :msg "Error in request" :data {:message message :exception exception :request request}}))
-     ::not-found (fn [message exception request]
+     ::exceptions/not-found (fn [message exception request]
                    (t/log! {:level :error :msg "Resource not found" :data {:message message :exception exception :request request}})
                    {:status 404
                     :headers {"Content-Type" "application/json"}
                     :body (generate-string {:error "Resource not found"})})
-     ::exception/default (fn [message exception request]
+     ::reitit-exception/default (fn [message exception request]
                            (t/log! {:level :error :msg "Error in request" :data {:message message :exception exception :request request}}))
     })))
 
