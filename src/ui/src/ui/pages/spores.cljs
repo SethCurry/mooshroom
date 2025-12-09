@@ -6,10 +6,12 @@
             [ui.components.chart :as chart]
             [reagent.session :as session]
             [taoensso.telemere :as t]
-            [ui.components.div :as div])
+            [ui.components.div :as div]
+            [ui.theme :as theme])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn spores-list []
+  (println theme/palette)
   (let [spores (r/atom [])]
     (go (reset! spores (<! (api-client/list-spores))))
     (fn []

@@ -11,6 +11,7 @@
    [ui.pages.spores :as spores]
    [ui.pages.enclosures :as enclosures]))
 
+
 ;; -------------------------
 ;; Views
 
