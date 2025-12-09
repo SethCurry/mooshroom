@@ -37,6 +37,16 @@
        [:button {:on-click #(on-create-enclosure-submit @name)} "Create"]])))
 
 
+(defn enclosure-spores-list [enclosure-id]
+  (let [spores (r/atom [])]
+    (go (reset! spores (<! (api-client/list-spores {:enclosure-id enclosure-id}))))
+    (fn []
+      [:div
+       [:h2 "Spores"]
+       [table/table ["ID" "Name"] (map (fn [spore]
+                                         [(:id spore) [:a {:href (str "/spores/" (:id spore))} (:name spore)]])
+                                       @spores)]])))
+
 (defn enclosure-detail []
   (let [routing-data (session/get :route)
         enclosure-id (get-in routing-data [:route-params :enclosure-id])
@@ -46,4 +56,5 @@
     (go (reset! spores (<! (api-client/list-spores {:enclosure-id enclosure-id}))))
     (fn []
       [:div
-       [:h1 (str "Enclosure: " (:name @enclosure))]])))
+       [:h1 (str "Enclosure: " (:name @enclosure))]
+       [enclosure-spores-list enclosure-id]])))
