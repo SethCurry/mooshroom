@@ -7,3 +7,7 @@
    (throw-exc type message {}))
   ([type message fields]
    (throw (ex-info message (merge fields {:type type})))))
+
+
+(defn throw-not-found [resource-name resource-id]
+  (throw-exc ::not-found (format "%s %s not found" resource-name resource-id)))

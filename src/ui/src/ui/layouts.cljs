@@ -7,4 +7,4 @@
                      styles/light-brown-bg)}
    [navbar/navbar [["Spores" "/spores"]
                    ["Enclosures" "/enclosures"]]]
-   [:div {:style {:padding "1rem"}} children]])
+   [:div {:key "main-content" :style {:padding "1rem"}} children]])

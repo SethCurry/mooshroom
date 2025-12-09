@@ -3,9 +3,20 @@
   (:require [cljs-http.client :as http]
             [cljs.core.async :refer [<!]]))
 
-(defn list-spores []
-  (go (let [response (<! (http/get "/api/v1/spores"))]
-        (:body response))))
+(defn- build-list-spores-query [options]
+  (->> {}
+       (#(if (nil? (:enclosure-id options))
+           %
+           (assoc % :enclosure-id (:enclosure-id options))))))
+
+(defn list-spores
+  ([] (list-spores {}))
+  ([{:keys [enclosure-id]
+     :or {enclosure-id nil}
+     :as options}]
+   (go (let [response (<! (http/get "/api/v1/spores"
+                                    {:query-params (build-list-spores-query options)}))]
+         (:body response)))))
 
 (defn get-spore [id]
   (go (let [response (<! (http/get (str "/api/v1/spores/" id)))]

@@ -40,8 +40,10 @@
 (defn enclosure-detail []
   (let [routing-data (session/get :route)
         enclosure-id (get-in routing-data [:route-params :enclosure-id])
-        enclosure (r/atom {})]
+        enclosure (r/atom {})
+        spores (r/atom [])]
     (go (reset! enclosure (:body (<! (api-client/get-enclosure enclosure-id)))))
+    (go (reset! spores (<! (api-client/list-spores {:enclosure-id enclosure-id}))))
     (fn []
       [:div
        [:h1 (str "Enclosure: " (:name @enclosure))]])))
