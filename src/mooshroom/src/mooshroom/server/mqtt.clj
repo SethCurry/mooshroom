@@ -41,7 +41,7 @@
 (defn fake-spore [conn]
   (while true
     (do
-      (mh/publish conn "mooshroom/spores/test_spore/dht_data" "{\"pin\": 1, \"temperature\": 20, \"humidity\": 40}")
+      (mh/publish conn "mooshroom/spores/another_test_spore/dht_data" "{\"pin\": 1, \"temperature\": 20, \"humidity\": 40}")
       (t/log! {:level :info :msg "Published DHT data" :data {:pin 1 :temperature 20 :humidity 40}})
       (Thread/sleep 1000))))
 

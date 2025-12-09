@@ -1,7 +1,8 @@
 (ns mooshroom.models.spores
   (:require [mooshroom.db :as db]
             [taoensso.telemere :as t]
-            [api.responses :refer [->Spore]]))
+            [api.responses :refer [->Spore]]
+            [mooshroom.exceptions :as exc]))
 
 (defn list-spores
   "Lists all spores from the database."
@@ -33,18 +34,20 @@
 (defn get-spore-by-name [name]
   (let [result (first (db/do-query {:select [:id :name] :from :spores :where [:= :name name]}
                                    :unmarshaller (fn [row] (->Spore (:spores/id row) (:spores/name row)))))]
-    result))
+    (if (nil? result)
+      (exc/throw-not-found "spore" name)
+      result)))
 
 (defn get-or-create-spore-by-name
   "Gets a spore by name or creates a new spore if it doesn't exist.
    Returns the spore."
   [name]
-  (let [result (get-spore-by-name name)]
-    (if (nil? result)
-      (do (t/log! {:level :debug :msg "Creating spore" :data {:name name}})
-          (create-spore name))
-      (do (t/log! {:level :debug :msg "Got spore" :data {:id (:id result)}})
-          result))))
+  (try (get-spore-by-name name)
+       (catch Exception e
+         (if (= (:type (ex-data e)) ::exc/not-found)
+           (do (t/log! {:level :debug :msg "Creating spore" :data {:name name}})
+               (create-spore name))
+           (throw e)))))
 
 (defn get-spore-by-id
   "Gets a spore by ID.

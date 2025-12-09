@@ -3,7 +3,6 @@
             [mooshroom.server.api :as api]
             [mooshroom.configuration :refer [config]]
             [ring.adapter.jetty :refer [run-jetty]]
-            [clojurewerkz.machine-head.client :as mh]
             [taoensso.telemere :as t]))
 
 

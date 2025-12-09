@@ -3,17 +3,16 @@
   (:require [cljs-http.client :as http]
             [cljs.core.async :refer [<!]]))
 
-(defn- build-list-spores-query [options]
+(defn- build-list-spores-query [{:keys [enclosure-id]
+                                 :or {enclosure-id nil}}]
   (->> {}
-       (#(if (nil? (:enclosure-id options))
+       (#(if (nil? enclosure-id)
            %
-           (assoc % :enclosure-id (:enclosure-id options))))))
+           (assoc % :enclosure-id enclosure-id)))))
 
 (defn list-spores
   ([] (list-spores {}))
-  ([{:keys [enclosure-id]
-     :or {enclosure-id nil}
-     :as options}]
+  ([options]
    (go (let [response (<! (http/get "/api/v1/spores"
                                     {:query-params (build-list-spores-query options)}))]
          (:body response)))))

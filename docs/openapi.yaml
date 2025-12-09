@@ -3,7 +3,6 @@ info:
   title: Mooshroom API
   description: |-
     This is the API for the Mooshroom project.
-
   termsOfService: https://github.com/SethCurry/mooshroom
   contact:
     email: noreply@nunya.biz
@@ -32,11 +31,11 @@ paths:
     get:
       tags:
         - spore
-      summary: Get all Spores
-      description: Get all Spores
-      operationId: getSpores
+      summary: List Spores
+      description: List Spores
+      operationId: listSpores
       parameters:
-        - name: enclosureId
+        - name: enclosure-id
           in: query
           description: Enclosure ID
           required: false
@@ -155,5 +154,5 @@ components:
   securitySchemes:
     api_key:
       type: apiKey
-      name: api_key
+      name: Authorization
       in: header
