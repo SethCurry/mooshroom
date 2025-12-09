@@ -55,4 +55,6 @@
   [id]
   (let [result (first (db/do-query {:select [:id :name] :from :spores :where [:= :id id]}
                                    :unmarshaller (fn [row] (->Spore (:spores/id row) (:spores/name row)))))]
-    result))
+    (if (nil? result)
+      (exc/throw-not-found "spore" id)
+      result)))

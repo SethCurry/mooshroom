@@ -18,19 +18,22 @@
      :headers {"Content-Type" "application/json"}
      :body data}))
 
+(defn not-found-handler [exception _]
+  (let [data (ex-data exception)
+        resource-type (:resource-name data)
+        resource-id (:resource-id data)]
+    (t/log! {:level :error :msg "Resource not found" :data data})
+    {:status 404
+     :headers {"Content-Type" "application/json"}
+     :body (generate-string {:error "Resource not found" :resource-type resource-type :resource-id resource-id})}))
+
 (def exception-middleware
   (reitit-exception/create-exception-middleware
    (merge
     reitit-exception/default-handlers
-    {
-     ::exceptions/not-found (fn [message exception request]
-                   (t/log! {:level :error :msg "Resource not found" :data {:message message :exception exception :request request}})
-                   {:status 404
-                    :headers {"Content-Type" "application/json"}
-                    :body (generate-string {:error "Resource not found"})})
-     ::reitit-exception/default (fn [message exception request]
-                           (t/log! {:level :error :msg "Error in request" :data {:message message :exception exception :request request}}))
-    })))
+    {::exceptions/not-found not-found-handler
+     ::reitit-exception/default (fn [exception request]
+                                  (t/log! {:level :error :msg "Error in request" :data {:exception exception :request request}}))})))
 
 (def app
   (reitit-ring/ring-handler
