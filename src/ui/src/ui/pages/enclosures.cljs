@@ -1,14 +1,16 @@
 (ns ui.pages.enclosures
   (:require-macros [cljs.core.async.macros :refer [go]])
 
-  (:require [ui.api-client :as api-client]
-            [cljs.core.async :refer [<!]]
-            [reagent.core :as r]
-            [ui.components.table :as table]
-            [ui.components.styles :as styles]
-            [ui.brower :as brower]
-            [taoensso.telemere :as t]
-            [reagent.session :as session]))
+  (:require
+   [cljs.core.async :refer [<!]]
+   [reagent.core :as r]
+   [reagent.session :as session]
+   [taoensso.telemere :as t]
+   [ui.api-client :as api-client]
+   [ui.brower :as brower]
+   [ui.components.spore.spore-table :as spore-table]
+   [ui.components.styles :as styles]
+   [ui.components.table :as table]))
 
 
 (defn enclosures-list []
@@ -37,16 +39,6 @@
        [:button {:on-click #(on-create-enclosure-submit @name)} "Create"]])))
 
 
-(defn enclosure-spores-list [enclosure-id]
-  (let [spores (r/atom [])]
-    (go (reset! spores (<! (api-client/list-spores {:enclosure-id enclosure-id}))))
-    (fn []
-      [:div
-       [:h2 "Spores"]
-       [table/table ["ID" "Name"] (map (fn [spore]
-                                         [(:id spore) [:a {:href (str "/spores/" (:id spore))} (:name spore)]])
-                                       @spores)]])))
-
 (defn enclosure-detail []
   (let [routing-data (session/get :route)
         enclosure-id (get-in routing-data [:route-params :enclosure-id])
@@ -57,4 +49,5 @@
     (fn []
       [:div
        [:h1 (str "Enclosure: " (:name @enclosure))]
-       [enclosure-spores-list enclosure-id]])))
+       [:h2 "Spores"]
+       [(spore-table/overview {:enclosure-id enclosure-id})]])))

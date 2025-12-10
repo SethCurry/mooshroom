@@ -2,24 +2,18 @@
   (:require [ui.api-client :as api-client]
             [cljs.core.async :refer [<!]]
             [reagent.core :as r]
-            [ui.components.table :as table]
             [ui.components.chart :as chart]
             [reagent.session :as session]
             [taoensso.telemere :as t]
             [ui.components.div :as div]
-            [ui.theme :as theme])
+            [ui.components.spore.spore-table :as spore-table])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn spores-list []
-  (println theme/palette)
-  (let [spores (r/atom [])]
-    (go (reset! spores (<! (api-client/list-spores))))
-    (fn []
-      [:div
-       [:h1 "Spores"]
-       [table/table ["ID" "Name"] (map (fn [spore]
-                                         [(:id spore) [:a {:href (str "/spores/" (:id spore))} (:name spore)]])
-                                       @spores)]])))
+  (fn []
+    [:div
+     [:h1 "Spores"]
+     [spore-table/overview {}]]))
 
 (defn spore-detail []
   (let [routing-data (session/get :route)
