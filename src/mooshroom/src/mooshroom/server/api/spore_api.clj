@@ -10,9 +10,7 @@
         raw-enclosure-id (get params "enclosure-id")
         enclosure-id (if (nil? raw-enclosure-id)
                        nil
-                       (if (= raw-enclosure-id "null")
-                         nil
-                         (Integer/parseInt raw-enclosure-id)))
+                       (Integer/parseInt raw-enclosure-id))
         spores (spores/list-spores {:enclosure-id enclosure-id})
         data (generate-string spores)]
     (t/log! {:level :debug :msg "List spores" :data {:params params}})

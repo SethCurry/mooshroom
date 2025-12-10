@@ -12,7 +12,7 @@
          base-query {:select [:id :name] :from :spores}
          query (if (nil? enclosure-id)
                  base-query
-                 (conj base-query [:where [:= :enclosure_id enclosure-id]]))
+                 (conj base-query [:where [:= :enclosure_id (if (= enclosure-id -1) nil enclosure-id)]]))
          results
          (doall (db/do-query query
                              :unmarshaller (fn [row] (->Spore (:spores/id row) (:spores/name row)))))
