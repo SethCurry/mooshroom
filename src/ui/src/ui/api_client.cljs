@@ -1,7 +1,8 @@
 (ns ui.api-client
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs-http.client :as http]
-            [cljs.core.async :refer [<!]]))
+            [cljs.core.async :refer [<!]]
+            [ui.components.table :refer [TableRow]]))
 
 (defn- build-list-spores-query [{:keys [enclosure-id]
                                  :or {enclosure-id nil}}]
@@ -10,16 +11,25 @@
            %
            (assoc % :enclosure-id enclosure-id)))))
 
+(defrecord ListSporesItem [id name]
+  TableRow
+  (get-id [this] id)
+  (row-data [this] [id name]))
+
 (defn list-spores
   ([] (list-spores {}))
   ([options]
    (go (let [response (<! (http/get "/api/v1/spores"
                                     {:query-params (build-list-spores-query options)}))]
-         (:body response)))))
+         (map (fn [item] (ListSporesItem. (:id item) (:name item))) (:body response))))))
 
 (defn get-spore [id]
   (go (let [response (<! (http/get (str "/api/v1/spores/" id)))]
         (:body response))))
+
+(defn update-spore [id fields]
+  (go (let [response (<! (http/put (str "/api/v1/spores/" id) {:json-params fields}))]
+        response)))
 
 (defn get-dht-data [id]
   (go (let [response (<! (http/get (str "/api/v1/dht_sensors/" id "/data")))]

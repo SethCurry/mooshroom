@@ -58,3 +58,6 @@
     (if (nil? result)
       (exc/throw-not-found "spore" id)
       result)))
+
+(defn update-spore [id fields]
+  (db/do-query {:update :spores :set fields :where [:= :id id]}))

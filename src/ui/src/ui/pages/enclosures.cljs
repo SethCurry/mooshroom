@@ -38,16 +38,27 @@
        [:input {:type "text" :value @name :on-change #(reset! name (-> % .-target .-value))}]
        [:button {:on-click #(on-create-enclosure-submit @name)} "Create"]])))
 
+(defn- on-add-spores-submit [enclosure-id spore-ids]
+  (doseq [spore-id spore-ids]
+    (let [enclosure (js/parseInt enclosure-id)]
+    (go (let [response (<! (api-client/update-spore spore-id {:enclosure_id enclosure}))]
+          (if (= (:status response) 200)
+            (t/log! {:level :debug :msg "Spore added" :data {:spore-id spore-id :enclosure-id enclosure-id}})
+            (t/log! {:level :error :msg "Failed to add spores" :data {:response response}})))))))
 
 (defn enclosure-detail []
   (let [routing-data (session/get :route)
         enclosure-id (get-in routing-data [:route-params :enclosure-id])
         enclosure (r/atom {})
-        spores (r/atom [])]
+        spores (r/atom [])
+        selected-spores (r/atom [])]
     (go (reset! enclosure (:body (<! (api-client/get-enclosure enclosure-id)))))
     (go (reset! spores (<! (api-client/list-spores {:enclosure-id enclosure-id}))))
     (fn []
       [:div
        [:h1 (str "Enclosure: " (:name @enclosure))]
        [:h2 "Spores"]
-       [(spore-table/overview {:enclosure-id enclosure-id})]])))
+       [(spore-table/overview {:enclosure-id enclosure-id})]
+       [:h2 "Add Spores"]
+       [(spore-table/selectable-overview {:enclosure-id -1} #(reset! selected-spores %))]
+       [:button {:on-click #(on-add-spores-submit enclosure-id @selected-spores)} "Add"]])))

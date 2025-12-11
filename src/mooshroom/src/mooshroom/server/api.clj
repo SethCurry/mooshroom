@@ -7,7 +7,7 @@
             [mooshroom.exceptions :as exceptions]
             [taoensso.telemere :as t]
             [mooshroom.server.api.enclosure-api :refer [view-enclosures new-enclosure get-enclosure]]
-            [mooshroom.server.api.spore-api :refer [list-spores get-spore]]))
+            [mooshroom.server.api.spore-api :refer [list-spores get-spore update-spore]]))
 
 
 (defn get-dht-sensor-data [request]
@@ -40,7 +40,8 @@
    (reitit-ring/router ["/api/v1"
                         ["/spores"
                          ["" {:get {:handler list-spores}}]
-                         ["/:spore-id" {:get {:handler get-spore}}]]
+                         ["/:spore-id" {:get {:handler get-spore}
+                                        :put {:handler update-spore}}]]
                         ["/dht_sensors/:dht_sensor_id/data" {:get {:handler get-dht-sensor-data}}]
                         ["/enclosures"
                          ["" {:get {:handler view-enclosures}

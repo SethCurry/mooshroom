@@ -1,7 +1,8 @@
 (ns mooshroom.server.api.spore-api
   (:require [mooshroom.models.spores :as spores]
             [mooshroom.db :as db]
-            [cheshire.core :refer [generate-string]]
+            [ring.util.request :refer [body-string]]
+            [cheshire.core :refer [generate-string parse-string]]
             [api.responses :refer [->SporeWithDHTSensors]]
             [taoensso.telemere :as t]))
 
@@ -25,3 +26,11 @@
     {:status 200
      :headers {"Content-Type" "application/json"}
      :body (generate-string (->SporeWithDHTSensors spore-id (:name spore) dht-sensors))}))
+
+(defn update-spore [request]
+  (let [spore-id (Integer/parseInt (get-in request [:path-params :spore-id]))
+        fields (parse-string (body-string request) true)]
+    (spores/update-spore spore-id fields)
+    {:status 200
+     :headers {"Content-Type" "application/json"}
+     :body "{}"}))

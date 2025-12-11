@@ -1,6 +1,11 @@
 (ns ui.components.table
   (:require
-   [ui.components.styles :as styles]))
+   [ui.components.styles :as styles]
+   [reagent.core :as r]))
+
+(defprotocol TableRow
+  (get-id [this])
+  (row-data [this]))
 
 (defn table [columns rows]
   [:table {:style {:background-color styles/color-dark-brown}}
@@ -18,3 +23,11 @@
                                          [:td column])
                                        row))])
                         rows))]])
+
+(defn table-with-checkboxes [columns rows on-change]
+  (let [selected-items (r/atom [])]
+    (table (conj columns "Selected") (map #(conj % [:input {:type "checkbox" :on-change (fn [e]
+                                                                                          (if (true? e.target.checked)
+                                                                                           (swap! selected-items conj (first %))
+                                                                                           (swap! selected-items (fn [items rm-item] (filter (fn [item] (not (= item rm-item))) items)) (first %)))
+                                                                                          (on-change @selected-items))}]) rows))))
