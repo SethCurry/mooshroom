@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include "esp_mac.h"
+#include "esp_log.h"
 #include "mqtt.hpp"
 #include "wifi.hpp"
 #include "dht.hpp"
@@ -51,13 +53,17 @@ extern "C" void app_main(void)
 
     MQTTClient mqttClient(mqttBrokerURL, mqttUsername, mqttPassword);
 
+    uint8_t mac_addr[6] = {0};
+
+    ESP_ERROR_CHECK(resp_read_mac(mac_addr, ESP_MAC_WIFI_STA));
+
     //register_with_ha(mqttClient.client);
 
-    int mqttTopicLen = snprintf(NULL, 0, "%s/spores/%s/dht_data", CONFIG_SPORE_MQTT_PREFIX, CONFIG_SPORE_NAME);
+    int mqttTopicLen = snprintf(NULL, 0, "%s/spores/%02x%02x%02x%02x%02x%02x/dht_data", CONFIG_SPORE_MQTT_PREFIX, mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
 
     char mqttTopic[mqttTopicLen + 1];
 
-    snprintf(mqttTopic, mqttTopicLen + 1, "%s/spores/%s/dht_data", CONFIG_SPORE_MQTT_PREFIX, CONFIG_SPORE_NAME);
+    snprintf(mqttTopic, mqttTopicLen + 1, "%s/spores/%02x%02x%02x%02x%02x%02x/dht_data", CONFIG_SPORE_MQTT_PREFIX, mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
 
     DHTClient dhtClient(CONFIG_DHT_PIN);
 

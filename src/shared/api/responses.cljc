@@ -1,6 +1,15 @@
-(ns api.responses)
+(ns api.responses
+  #?(:clj (:require [cheshire.core :as cheshire])))
 
-(defrecord Spore [id name])
+(defn marshal-json [item]
+  #?(:clj (cheshire/generate-string item)
+      :cljs (.stringify js/JSON (cljs->js item))))
+
+(defn unmarshal-json [item]
+  #?(:clj (cheshire/parse-string item true)
+      :cljs (js->cljs (.parse js/JSON item))))
+
+(defrecord Spore [id name mac-address])
 
 (defrecord SporeWithDHTSensors [id name dht-sensors])
 

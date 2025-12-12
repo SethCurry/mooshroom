@@ -11,17 +11,17 @@
   (t/log! {:level :debug :msg "Received DHT data" :data {:topic topic :payload payload}})
   (let [split-topic (clojure.string/split topic #"/")
         topic-len (count split-topic)
-        spore-name (nth split-topic (- topic-len 2))
+        mac-address (nth split-topic (- topic-len 2))
         dht-pin (:pin payload)
         humidity (:humidity payload)
         temperature (:temperature payload)
         ts (java.sql.Timestamp/from (java.time.Instant/now))]
-    (t/log! {:level :debug :msg "Getting or creating spore" :data {:spore-name spore-name}})
-    (let [spore (spores/get-or-create-spore-by-name spore-name)]
+    (t/log! {:level :debug :msg "Getting or creating spore" :data {:spore-mac-address mac-address}})
+    (let [spore (spores/get-or-create-spore-by-mac-address mac-address)]
       (t/log! {:level :debug :msg "Got or created spore" :data {:spore-id (:id spore)}})
       (let [dht-sensor (db/get-or-create-dht-sensor-by-spore-id-and-pin (:id spore) dht-pin)]
         (t/log! {:level :debug :msg "Got or created DHT sensor" :data {:dht-sensor-id (:id dht-sensor)}})
-        (t/log! {:level :debug :msg "Creating DHT sensor data" :data {:topic topic :spore-name spore-name :dht-pin dht-pin :humidity humidity :temperature temperature}})
+        (t/log! {:level :debug :msg "Creating DHT sensor data" :data {:topic topic :spore-mac-address mac-address :dht-pin dht-pin :humidity humidity :temperature temperature}})
         (db/create-dht-sensor-data (:id dht-sensor) ts humidity temperature)
         (t/log! {:level :info :msg "Created DHT sensor data" :data {:dht-sensor-id (:id dht-sensor) :humidity humidity :temperature temperature}})))))
 
@@ -41,7 +41,7 @@
 (defn fake-spore [conn]
   (while true
     (do
-      (mh/publish conn "mooshroom/spores/another_test_spore/dht_data" "{\"pin\": 1, \"temperature\": 20, \"humidity\": 40}")
+      (mh/publish conn "mooshroom/spores/112233445566/dht_data" "{\"pin\": 1, \"temperature\": 20, \"humidity\": 40}")
       (t/log! {:level :info :msg "Published DHT data" :data {:pin 1 :temperature 20 :humidity 40}})
       (Thread/sleep 1000))))
 
