@@ -6,13 +6,14 @@
             [reitit.ring.middleware.exception :as reitit-exception]
             [mooshroom.exceptions :as exceptions]
             [taoensso.telemere :as t]
+            [mooshroom.models.dht-sensors :as dht-sensors]
             [mooshroom.server.api.enclosure-api :refer [view-enclosures new-enclosure get-enclosure]]
             [mooshroom.server.api.spore-api :refer [list-spores get-spore update-spore]]))
 
 
 (defn get-dht-sensor-data [request]
   (let [dht-sensor-id (Integer/parseInt (get-in request [:path-params :dht_sensor_id]))
-        data (db/get-dht-sensor-data-by-id dht-sensor-id)
+        data (dht-sensors/get-dht-sensor-data-by-id dht-sensor-id)
         data (generate-string data)]
     {:status 200
      :headers {"Content-Type" "application/json"}

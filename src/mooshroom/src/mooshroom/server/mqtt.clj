@@ -5,6 +5,7 @@
             [mooshroom.configuration :refer [config]]
             [clojure.string]
             [mooshroom.models.spores :as spores]
+            [mooshroom.models.dht-sensors :as dht-sensors]
             [mooshroom.db :as db]))
 
 (defn handle-dht-data [topic payload]
@@ -19,10 +20,10 @@
     (t/log! {:level :debug :msg "Getting or creating spore" :data {:spore-mac-address mac-address}})
     (let [spore (spores/get-or-create-spore-by-mac-address mac-address)]
       (t/log! {:level :debug :msg "Got or created spore" :data {:spore-id (:id spore)}})
-      (let [dht-sensor (db/get-or-create-dht-sensor-by-spore-id-and-pin (:id spore) dht-pin)]
+      (let [dht-sensor (dht-sensors/get-or-create-dht-sensor-by-spore-id-and-pin (:id spore) dht-pin)]
         (t/log! {:level :debug :msg "Got or created DHT sensor" :data {:dht-sensor-id (:id dht-sensor)}})
         (t/log! {:level :debug :msg "Creating DHT sensor data" :data {:topic topic :spore-mac-address mac-address :dht-pin dht-pin :humidity humidity :temperature temperature}})
-        (db/create-dht-sensor-data (:id dht-sensor) ts humidity temperature)
+        (dht-sensors/create-dht-sensor-data (:id dht-sensor) ts humidity temperature)
         (t/log! {:level :info :msg "Created DHT sensor data" :data {:dht-sensor-id (:id dht-sensor) :humidity humidity :temperature temperature}})))))
 
 (defn create-mqtt-handler [callback]

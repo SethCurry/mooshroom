@@ -4,6 +4,7 @@
             [ring.util.request :refer [body-string]]
             [cheshire.core :refer [generate-string parse-string]]
             [api.responses :refer [->SporeWithDHTSensors]]
+            [mooshroom.models.dht-sensors :as dht-sensors]
             [taoensso.telemere :as t]))
 
 (defn list-spores [request]
@@ -22,10 +23,10 @@
 (defn get-spore [request]
   (let [spore-id (Integer/parseInt (get-in request [:path-params :spore-id]))
         spore (spores/get-spore-by-id spore-id)
-        dht-sensors (db/get-dht-sensors-by-spore-id spore-id)]
+        sensors (dht-sensors/get-dht-sensors-by-spore-id spore-id)]
     {:status 200
      :headers {"Content-Type" "application/json"}
-     :body (generate-string (->SporeWithDHTSensors spore-id (:name spore) (:mac-address spore) dht-sensors))}))
+     :body (generate-string (->SporeWithDHTSensors spore-id (:name spore) (:mac-address spore) sensors))}))
 
 (defn update-spore [request]
   (let [spore-id (Integer/parseInt (get-in request [:path-params :spore-id]))
