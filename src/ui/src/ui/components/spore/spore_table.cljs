@@ -9,9 +9,9 @@
   (let [spores (r/atom [])]
     (go (reset! spores (<! (api-client/list-spores spore-filter))))
     (fn []
-      [table/table ["ID" "Name"] (map (fn [spore]
-                                        [(:id spore) [:a {:href (str "/spores/" (:id spore))} (:name spore)]])
-                                      @spores)])))
+      [table/table ["ID" "Name" "MAC Address"] (map (fn [spore]
+                                                      [(:id spore) [:a {:href (str "/spores/" (:id spore))} (:name spore)] (:mac-address spore)])
+                                                    @spores)])))
 
 
 (defn selectable-overview [spore-filter on-change]
@@ -21,6 +21,6 @@
       [table/table-with-checkboxes
        ["ID" "Name"]
        (map (fn [spore]
-                                        [(:id spore) [:a {:href (str "/spores/" (:id spore))} (:name spore)]])
-                                      @spores)
+              [(:id spore) [:a {:href (str "/spores/" (:id spore))} (:name spore)]])
+            @spores)
        on-change])))

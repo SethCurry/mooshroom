@@ -25,7 +25,7 @@
         dht-sensors (db/get-dht-sensors-by-spore-id spore-id)]
     {:status 200
      :headers {"Content-Type" "application/json"}
-     :body (generate-string (->SporeWithDHTSensors spore-id (:name spore) dht-sensors))}))
+     :body (generate-string (->SporeWithDHTSensors spore-id (:name spore) (:mac-address spore) dht-sensors))}))
 
 (defn update-spore [request]
   (let [spore-id (Integer/parseInt (get-in request [:path-params :spore-id]))

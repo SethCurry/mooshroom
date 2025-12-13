@@ -11,7 +11,7 @@
            %
            (assoc % :enclosure-id enclosure-id)))))
 
-(defrecord ListSporesItem [id name]
+(defrecord ListSporesItem [id name mac-address]
   TableRow
   (get-id [this] id)
   (row-data [this] [id name]))
@@ -21,7 +21,7 @@
   ([options]
    (go (let [response (<! (http/get "/api/v1/spores"
                                     {:query-params (build-list-spores-query options)}))]
-         (map (fn [item] (ListSporesItem. (:id item) (:name item))) (:body response))))))
+         (map (fn [item] (ListSporesItem. (:id item) (:name item) (:mac-address item))) (:body response))))))
 
 (defn get-spore [id]
   (go (let [response (<! (http/get (str "/api/v1/spores/" id)))]
