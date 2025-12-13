@@ -1,6 +1,5 @@
 (ns mooshroom.server.api.spore-api
   (:require [mooshroom.models.spores :as spores]
-            [mooshroom.db :as db]
             [ring.util.request :refer [body-string]]
             [cheshire.core :refer [generate-string parse-string]]
             [api.responses :refer [->SporeWithDHTSensors]]

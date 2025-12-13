@@ -3,7 +3,6 @@
             [next.jdbc :as jdbc]
             [honey.sql :as sql]
             [taoensso.telemere :as t]
-            [api.responses :refer [->DHTSensor ->DHTSensorData]]
             [mooshroom.configuration :refer [config]]))
 
 (def datasource-options {:auto-commit true

@@ -1,6 +1,5 @@
 (ns mooshroom.server.api
-  (:require [mooshroom.db :as db]
-            [cheshire.core :refer [generate-string]]
+  (:require [cheshire.core :refer [generate-string]]
             [reitit.ring :as reitit-ring]
             [reitit.ring.middleware.parameters :refer [parameters-middleware]]
             [reitit.ring.middleware.exception :as reitit-exception]

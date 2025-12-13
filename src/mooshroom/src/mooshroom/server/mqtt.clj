@@ -5,8 +5,7 @@
             [mooshroom.configuration :refer [config]]
             [clojure.string]
             [mooshroom.models.spores :as spores]
-            [mooshroom.models.dht-sensors :as dht-sensors]
-            [mooshroom.db :as db]))
+            [mooshroom.models.dht-sensors :as dht-sensors]))
 
 (defn handle-dht-data [topic payload]
   (t/log! {:level :debug :msg "Received DHT data" :data {:topic topic :payload payload}})
