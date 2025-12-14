@@ -14,3 +14,14 @@
                    (Integer/parseInt raw-genus-id))
         species (taxonomy/list-species {:genus-id genus-id})]
     (make-response 200 species)))
+
+(defn get-genus [request]
+  (let [genus-id (Integer/parseInt (get-in request [:path-params :genus-id]))
+        genus (taxonomy/get-genus-by-id genus-id)]
+    (make-response 200 genus)))
+
+(defn get-species [request]
+  (let [species-id (Integer/parseInt (get-in request [:path-params :species-id]))
+        species (taxonomy/get-species-by-id species-id)
+        common-names (taxonomy/get-species-common-names species-id)]
+    (make-response 200 (assoc species :common-names common-names))))

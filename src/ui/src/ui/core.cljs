@@ -1,6 +1,5 @@
 (ns ui.core
   (:require
-   [reagent.core :as reagent :refer [atom]]
    [taoensso.telemere :as t]
    [reagent.dom :as rdom]
    [clojure.string :as string]
@@ -9,7 +8,8 @@
    [reagent.session :as session]
    [ui.layouts :as layouts]
    [ui.pages.spores :as spores]
-   [ui.pages.enclosures :as enclosures]))
+   [ui.pages.enclosures :as enclosures]
+   [ui.pages.taxonomy :as taxonomy]))
 
 
 ;; -------------------------
@@ -37,7 +37,13 @@
     ["/enclosures"
      ["" :enclosures]
      ["/new" :new-enclosure]
-     ["/view/:enclosure-id" :enclosure-detail]]]))
+     ["/view/:enclosure-id" :enclosure-detail]]
+    ["/genera"
+     ["" :genera]
+     ["/:genus-id" :genus-detail]]
+    ["/species"
+     ["" :species]
+     ["/:species-id" :species-detail]]]))
 
 (defn path-for [route & [params]]
   (if params
@@ -64,7 +70,11 @@
     :spore-detail #(spores/spore-detail)
     :enclosures #(enclosures/enclosures-list)
     :new-enclosure #(enclosures/new-enclosure)
-    :enclosure-detail #(enclosures/enclosure-detail)))
+    :enclosure-detail #(enclosures/enclosure-detail)
+    :genera #(taxonomy/genera-list)
+    :genus-detail #(taxonomy/genus-detail)
+    :species #(taxonomy/species-list)
+    :species-detail #(taxonomy/species-detail)))
 
 
 ;; -------------------------

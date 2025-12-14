@@ -35,6 +35,7 @@
             :or {unmarshaller nil}}]
   (t/log! {:level :debug :msg "executing query" :data {:query (first query) :params (rest query)}})
   (let [rows (jdbc/execute! @datasource query)]
+    (t/log! {:level :debug :msg "query result" :data {:rows rows}})
     (if (not (nil? unmarshaller))
       (map unmarshaller rows)
       rows)))

@@ -46,3 +46,38 @@
 (defn get-enclosure [id]
   (go (let [response (<! (http/get (str "/api/v1/enclosures/" id)))]
         response)))
+
+(defrecord ListGeneraItem [id name])
+
+(defn list-genera
+  ([] (list-genera {}))
+  ([{:keys []
+     :or {}}]
+   (go (let [response (<! (http/get "/api/v1/taxonomy/genera"
+                                    {:query-params {}}))]
+         (map (fn [item] (ListGeneraItem. (:id item) (:name item))) (:body response))))))
+
+(defn get-genus [id]
+  (go (let [response (<! (http/get (str "/api/v1/taxonomy/genera/" id)))]
+        (:body response))))
+
+(defrecord ListSpeciesItem [id name genus])
+
+
+(defn- build-list-species-query [{:keys [genus-id]
+                                  :or {genus-id nil}}]
+  (->> {}
+       (#(if (nil? genus-id)
+           %
+           (assoc % :genus-id genus-id)))))
+
+(defn list-species
+  ([] (list-species {}))
+  ([options]
+   (go (let [response (<! (http/get "/api/v1/taxonomy/species"
+                                    {:query-params (build-list-species-query options)}))]
+         (map (fn [item] (ListSpeciesItem. (:id item) (:name item) (ListGeneraItem. (:id (:genus item)) (:name (:genus item))))) (:body response))))))
+
+(defn get-species [id]
+  (go (let [response (<! (http/get (str "/api/v1/taxonomy/species/" id)))]
+        (:body response))))

@@ -3,7 +3,8 @@
    [clojure.tools.cli :refer [parse-opts]]
    [taoensso.telemere :as t]
    [mooshroom.server.core :as server]
-   [mooshroom.server.mqtt :as mqtt])
+   [mooshroom.server.mqtt :as mqtt]
+   [mooshroom.ingest :as ingest])
   (:gen-class))
 
 
@@ -15,7 +16,9 @@
 (def commands {:server {:options []
                         :fn server/start-server}
                :fake-spore {:options []
-                            :fn (fn [_ _] (mqtt/fake-spore (mqtt/connect)))}})
+                            :fn (fn [_ _] (mqtt/fake-spore (mqtt/connect)))}
+               :ingest-taxonomy {:options []
+                                 :fn (fn [args _] (ingest/ingest-taxonomy (first args)))}})
 
 (defn -main
   "I don't do a whole lot ... yet."
