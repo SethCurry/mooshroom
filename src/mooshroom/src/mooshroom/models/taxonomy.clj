@@ -5,15 +5,21 @@
 
 (defrecord Genera [id name])
 
+(defn- extract-genera [row]
+  (->Genera (:genera/id row) (:genera/name row)))
+
+(def genera-columns [:id :name])
+
 (defn list-genera
   "Lists all genera from the database."
   ([] (list-genera {}))
   ([options]
-   (let [base-query {:select [:id :name] :from :genera}
+   (let [base-query {:select genera-columns
+                     :from :genera}
          query base-query
          results
          (doall (db/do-query query
-                             :unmarshaller (fn [row] (->Genera (:genera/id row) (:genera/name row)))))
+                             :unmarshaller extract-genera))
          filled-result (if (empty? results)
                          []
                          results)]
@@ -28,16 +34,16 @@
     result))
 
 (defn get-genus-by-id [id]
-  (first (db/do-query {:select [:id :name]
+  (first (db/do-query {:select genera-columns
                        :from :genera
                        :where [:= :id id]}
-                      :unmarshaller (fn [row] (->Genera (:genera/id row) (:genera/name row))))))
+                      :unmarshaller extract-genera)))
 
 (defn get-genus-by-name [name]
-  (let [result (first (db/do-query {:select [:id :name]
+  (let [result (first (db/do-query {:select genera-columns
                                     :from :genera
                                     :where [:= :name name]}
-                                   :unmarshaller (fn [row] (->Genera (:genera/id row) (:genera/name row)))))]
+                                   :unmarshaller extract-genera))]
     (if (nil? result)
       (exc/throw-not-found "genus" name)
       result)))
