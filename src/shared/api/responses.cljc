@@ -9,7 +9,7 @@
   #?(:clj (cheshire/parse-string item true)
      :cljs (js->cljs (.parse js/JSON item))))
 
-(defrecord Spore [id name mac-address])
+(defrecord Spore [id name mac-address enclosure-id])
 
 (defrecord SporeWithDHTSensors [id name mac-address dht-sensors])
 

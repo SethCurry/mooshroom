@@ -1,0 +1,2 @@
+- Link from spore detail page to the enclosure it belongs to
+- Allow editing spore name on its detail page

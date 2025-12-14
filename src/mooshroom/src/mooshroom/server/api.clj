@@ -6,6 +6,7 @@
             [mooshroom.exceptions :as exceptions]
             [taoensso.telemere :as t]
             [mooshroom.models.dht-sensors :as dht-sensors]
+            [mooshroom.server.api.taxonomy-api :refer [list-genera list-species]]
             [mooshroom.server.api.enclosure-api :refer [view-enclosures new-enclosure get-enclosure]]
             [mooshroom.server.api.spore-api :refer [list-spores get-spore update-spore]]))
 
@@ -42,6 +43,9 @@
                          ["" {:get {:handler list-spores}}]
                          ["/:spore-id" {:get {:handler get-spore}
                                         :put {:handler update-spore}}]]
+                        ["/taxonomy"
+                         ["/genera" {:get {:handler list-genera}}]
+                         ["/species" {:get {:handler list-species}}]]
                         ["/dht_sensors/:dht_sensor_id/data" {:get {:handler get-dht-sensor-data}}]
                         ["/enclosures"
                          ["" {:get {:handler view-enclosures}
