@@ -2,10 +2,17 @@
   (:require [api.responses :refer [->DHTSensor ->DHTSensorData]]
             [mooshroom.db :refer [do-query]]))
 
+(def dht-sensor-columns [:id :name :gpio_pin])
+
+(defn- extract-dht-sensor [row]
+  (->DHTSensor (:dht_sensors/id row) (:dht_sensors/name row) (:dht_sensors/gpio_pin row)))
+
 
 (defn get-dht-sensors-by-spore-id [spore-id]
-  (let [result (do-query {:select [:id :name :gpio_pin] :from :dht_sensors :where [:= :spore_id spore-id]}
-                         :unmarshaller (fn [row] (->DHTSensor (:dht_sensors/id row) (:dht_sensors/name row) (:dht_sensors/gpio_pin row))))]
+  (let [result (do-query {:select dht-sensor-columns
+                          :from :dht_sensors
+                          :where [:= :spore_id spore-id]}
+                         :unmarshaller extract-dht-sensor)]
     result))
 
 (defn get-dht-sensor-data-by-id [id]
@@ -14,8 +21,12 @@
     result))
 
 (defn get-dht-sensor-by-spore-id-and-pin [spore-id pin]
-  (let [result (first (do-query {:select [:id :name :gpio_pin] :from :dht_sensors :where [:and [:= :spore_id spore-id] [:= :gpio_pin pin]]}
-                                :unmarshaller (fn [row] (->DHTSensor (:dht_sensors/id row) (:dht_sensors/name row) (:dht_sensors/gpio_pin row)))))]
+  (let [result (first (do-query {:select dht-sensor-columns
+                                 :from :dht_sensors
+                                 :where [:and
+                                         [:= :spore_id spore-id]
+                                         [:= :gpio_pin pin]]}
+                                :unmarshaller extract-dht-sensor))]
     result))
 
 (defn create-dht-sensor [name pin spore-id]
