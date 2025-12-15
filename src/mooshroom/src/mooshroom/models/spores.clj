@@ -4,12 +4,17 @@
             [api.responses :refer [->Spore]]
             [mooshroom.exceptions :as exc]))
 
+(def spore-columns [:id :name :mac_address :enclosure_id])
+
+(defn- extract-spore [row]
+  (->Spore (:spores/id row) (:spores/name row) (:spores/mac_address row) (:spores/enclosure_id row)))
+
 (defn list-spores
   "Lists all spores from the database."
   ([] (list-spores {}))
   ([{:keys [enclosure-id]
      :or {enclosure-id nil}}]
-   (let [base-query {:select [:id :name :mac_address :enclosure_id]
+   (let [base-query {:select spore-columns
                      :from :spores}
          query (if (nil? enclosure-id)
                  base-query
@@ -19,10 +24,7 @@
                                                    enclosure-id)]]))
          results
          (doall (db/do-query query
-                             :unmarshaller (fn [row] (->Spore (:spores/id row)
-                                                              (:spores/name row)
-                                                              (:spores/mac_address row)
-                                                              (:spores/enclosure_id row)))))
+                             :unmarshaller extract-spore))
          filled-result (if (empty? results)
                          []
                          results)]
@@ -39,26 +41,20 @@
     result))
 
 (defn get-spore-by-name [name]
-  (let [result (first (db/do-query {:select [:id :name :mac_address :enclosure_id]
+  (let [result (first (db/do-query {:select spore-columns
                                     :from :spores
                                     :where [:= :name name]}
-                                   :unmarshaller (fn [row] (->Spore (:spores/id row)
-                                                                    (:spores/name row)
-                                                                    (:spores/mac_address row)
-                                                                    (:spores/enclosure_id row)))))]
+                                   :unmarshaller extract-spore))]
     (if (nil? result)
       (exc/throw-not-found "spore" name)
       result)))
 
 
 (defn get-spore-by-mac-address [mac-address]
-  (let [result (first (db/do-query {:select [:id :name :mac_address :enclosure_id]
+  (let [result (first (db/do-query {:select spore-columns
                                     :from :spores
                                     :where [:= :mac_address mac-address]}
-                                   :unmarshaller (fn [row] (->Spore (:spores/id row)
-                                                                    (:spores/name row)
-                                                                    (:spores/mac_address row)
-                                                                    (:spores/enclosure_id row)))))]
+                                   :unmarshaller extract-spore))]
     (if (nil? result)
       (exc/throw-not-found "spore" mac-address)
       result)))
@@ -81,13 +77,10 @@
   "Gets a spore by ID.
    Returns the spore."
   [id]
-  (let [result (first (db/do-query {:select [:id :name :mac_address :enclosure_id]
+  (let [result (first (db/do-query {:select spore-columns
                                     :from :spores
                                     :where [:= :id id]}
-                                   :unmarshaller (fn [row] (->Spore (:spores/id row)
-                                                                    (:spores/name row)
-                                                                    (:spores/mac_address row)
-                                                                    (:spores/enclosure_id row)))))]
+                                   :unmarshaller extract-spore))]
     (if (nil? result)
       (exc/throw-not-found "spore" id)
       result)))
